@@ -1,0 +1,33 @@
+descriptif:
+
+L'objectif ici est de pouvoir développer en collaboration et pouvoir éffectuer une validation progressif tout ensemble.
+en cas d'incomprehenssion l'on peut en discuter dans le chat sans souci.
+
+Nous avons décider comme Mayssa l'avait préciser dans le groupe de structurer le projet en trois partie:
+
+une partie pricing ou l'on aura que les code en lien avec le swap
+Une partie quant ou l'on développera les bibliothèques dont on aura besoin dans la partie pricing
+Une partie Unit dédié uniquement pour l'exécution du code, affissage des plots. etc.
+
+dans la réunion précédente nous avons donné des noms à chaque fonctions afin que cela ne gène pas le développement des autres et préciser le type de sortie
+
+par rapport à l'utilisation de Git:
+
+- vous pouvez télecharger git bash sa prendra peut de temps et sa facilite l'interaction avec github ou utiliser directement pycharm
+
+les commandes dont vous aurez besoin de base:
+git status: pour checké vos modificatio,
+git chekout : pour passer vers une autre branche
+git pull pour mettre votre branche à jour( très important sans sa vous ne verrez pas les modification qui ont été exécuté)
+pour envoyé vos modification dans votre branche:
+
+git add .
+git commit -m "petit descriptif de vos modif"
+git push
+
+n'hesitez pas si vous avez des questions.
+
+sur le projet j'ai définis des règles de sécurité de tels sortes que aucun de nous ne peut directement effectuer des modifs sur la branche principal
+
+
+PS: j'ai créer des branches pour chaque tache donc pour la personne qui s'en charge il peut faire un checkout sur cette branche et y travaillé et ensuite pullé
