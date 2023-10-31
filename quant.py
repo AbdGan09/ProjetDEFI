@@ -29,8 +29,9 @@ class MarketZeroCoupon:
 
 
 #MarketZeroCouponCurve
-def marketZeroCouponCurve():
-    pass
+def marketZeroCouponCurve(T, Betha0 = 2.61, Betha1 = -1.33, lambdas = 0.17):
+    return np.exp(-((Betha0+Betha1*((1-np.exp(-lambdas*T))/(lambdas*T)))*(T/100)))
+
 
 
 def marketZeroCouponInstFwdCurve():
