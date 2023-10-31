@@ -63,8 +63,12 @@ def B():
 
 
 #fonction P(t,T): The Zero Coupon price
-def zeroCoupon():
-    pass
+#T: maturité
+#t: pour le temps actuel
+def zeroCoupon(t, T):
+    return A(t, T) * np.exp(-B(t,T)*hullWhite(t))
+
+
 
 
 #Modele de Hull White
