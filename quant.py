@@ -9,12 +9,25 @@ import scipy as sc
 
 #definition de la class que monsieur a demander dans son cours:
 class MarketZeroCoupon:
-    def __init__(self, parametre):
-        self.parametre = parametre
+    def __init__(self, x):
+        self.x = x
 
+    def MarketZeroCouponCurve(self, t):
+        if t == 0:
+            return 1
+        else:
+            numerator = 1 - math.exp(-self.x * t)
+            denominator = self.x * t
+            return 1 + (numerator / denominator) 
+    
     @staticmethod
-    def getMarketZeroCouponCurve(parametre):
-        return marketZeroCouponCurve(parametre)
+    def MarketZeroCouponInstFwdCurve(self, t):
+        if t == 0:
+            return 0
+        else:
+            P_t = self.MarketZeroCouponCurve(t)
+            return -P_t / (self.x * (t ** 2))
+
 
     @staticmethod
     def getmarketZeroCouponInstFwdCurve(parametre):
