@@ -59,8 +59,8 @@ def gettheta():
 
 
 #fonction B(t, T)
-def B():
-    pass
+def BondPrice(t, T, α=0.1):
+    return ((1 - exp(-α * (T - t))) / α)
 
 
 #fonction P(t,T): The Zero Coupon price
