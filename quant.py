@@ -18,9 +18,9 @@ class MarketZeroCoupon:
         return np.exp(-((Betha0+Betha1*((1-np.exp(-lambdas*T))/(lambdas*T)))*(T/100)))
 
     @staticmethod
-    def getmarketZeroCouponInstFwdCurve(T):
-        f = lambda x: -np.log(MarketZeroCoupon.getMarketZeroCouponCurve(T))
-        return scipy.misc.derivative(f, T)
+    def getmarketZeroCouponInstFwdCurve(t):
+        f = lambda x: -np.log(MarketZeroCoupon.getMarketZeroCouponCurve(x))
+        return scipy.misc.derivative(f, t)
 
 #comme discuté j'ai juste écrire les classes les fonctions à l'intérieur on se les repartis
 
@@ -34,13 +34,21 @@ def plotSimulation():
 
 
 #fonction A(t,T)
-def A():
-    pass
+def A(t,T, α=0.1 ,sigma=0.15):
+    B = BondPrice(t, T)
+    fM = MarketZeroCoupon.getmarketZeroCouponInstFwdCurve(t)
+    e = np.exp((-B*fM)-((sigma**2*((np.exp(-α*T)-np.exp(-α*t))**2)*(np.exp(2*α*t)-1))/(4*α**3)))
+    return ((MarketZeroCoupon.getMarketZeroCouponCurve(T)/MarketZeroCoupon.getMarketZeroCouponCurve(t))*e)
 
 
 #fonction Theta
-def gettheta():
-    return Theta
+def gettheta(t,α=0.1 ,sigma=0.15):
+    f = lambda x: MarketZeroCoupon.getmarketZeroCouponInstFwdCurve(x)
+    dfM = scipy.misc.derivative(f, t)
+
+    fM = MarketZeroCoupon.getmarketZeroCouponInstFwdCurve(t)
+
+    return ((α*fM)+dfM+(((sigma**2)/2*α)*(1-np.exp(-2*α*t))))
 
 
 #fonction B(t, T)
