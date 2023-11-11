@@ -19,16 +19,8 @@ class MarketZeroCoupon:
 
     @staticmethod
     def getmarketZeroCouponInstFwdCurve(T, Betha0 = 2.61, Betha1 = -1.33, lambdas = 0.17):
-        f = lambda x: -log(getMarketZeroCouponCurve(x, Betha0 = 2.61, Betha1 = -1.33, lambdas = 0.17))
+        f = lambda x: -np.log(getMarketZeroCouponCurve(x, Betha0 = 2.61, Betha1 = -1.33, lambdas = 0.17))
         return scipy.misc.derivative(f, T)
-
-#comme discuté j'ai juste écrire les classes les fonctions à l'intérieur on se les repartis
-
-
-#si quelqu'un juge necessaire de faire des function suplémentaire il peux le faire l'objectif étant de mieu segmenté notre code pour le rendre plus lisible
-
-
-
 
 #MarketZeroCouponCurve
 def marketZeroCouponCurve():
