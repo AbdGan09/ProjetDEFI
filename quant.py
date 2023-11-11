@@ -15,10 +15,10 @@ class MarketZeroCoupon:
 
     @staticmethod
     def getMarketZeroCouponCurve(T, Betha0 = 2.61, Betha1 = -1.33, lambdas = 0.17):
-        return marketZeroCouponCurve(T)
+        return np.exp(-((Betha0+Betha1*((1-np.exp(-lambdas*T))/(lambdas*T)))*(T/100)))
 
     @staticmethod
-    def getmarketZeroCouponInstFwdCurve(T, Betha0 = 2.61, Betha1 = -1.33, lambdas = 0.17):
+    def getmarketZeroCouponInstFwdCurve(T):
         f = lambda x: -np.log(MarketZeroCoupon.getMarketZeroCouponCurve(T))
         return scipy.misc.derivative(f, T)
 
@@ -26,23 +26,6 @@ class MarketZeroCoupon:
 
 
 #si quelqu'un juge necessaire de faire des function suplémentaire il peux le faire l'objectif étant de mieu segmenté notre code pour le rendre plus lisible
-
-
-
-
-#MarketZeroCouponCurve
-def marketZeroCouponCurve(T, Betha0 = 2.61, Betha1 = -1.33, lambdas = 0.17):
-    return np.exp(-((Betha0+Betha1*((1-np.exp(-lambdas*T))/(lambdas*T)))*(T/100)))
-
-
-
-def marketZeroCouponInstFwdCurve():
-    pass
-
-
-#definition de la derivee Seconde a etre utilise après pour le calcul de Theta
-def getSecondDerive(param, fonction):
-    pass
 
 
 #plot des trajectoire
@@ -62,14 +45,14 @@ def gettheta():
 
 #fonction B(t, T)
 def BondPrice(t, T, α=0.1):
-    return ((1 - exp(-α * (T - t))) / α)
+    return ((1 - np.exp(-α * (T - t))) / α)
 
 
 #fonction P(t,T): The Zero Coupon price
 #T: maturité
 #t: pour le temps actuel
 def zeroCoupon(t, T):
-    return A(t, T) * np.exp(-B(t,T)*hullWhite(t))
+    return A(t, T) * np.exp(-BondPrice(t,T)*hullWhite(t))
 
 
 
