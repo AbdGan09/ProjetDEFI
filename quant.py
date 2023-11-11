@@ -3,7 +3,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-import scipy as sc
+from scipy import optimize
+import scipy.misc
 
 ##methode à utiliser après###
 
@@ -17,8 +18,9 @@ class MarketZeroCoupon:
         return marketZeroCouponCurve(parametre)
 
     @staticmethod
-    def getmarketZeroCouponInstFwdCurve(parametre):
-        return marketZeroCouponInstFwdCurve(parametre)
+    def getmarketZeroCouponInstFwdCurve(T, Betha0 = 2.61, Betha1 = -1.33, lambdas = 0.17):
+        f = lambda x: log(getMarketZeroCouponCurve(x, Betha0 = 2.61, Betha1 = -1.33, lambdas = 0.17))
+        return scipy.misc.derivative(f, T)
 
 #comme discuté j'ai juste écrire les classes les fonctions à l'intérieur on se les repartis
 
