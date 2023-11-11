@@ -10,16 +10,16 @@ import scipy.misc
 
 #definition de la class que monsieur a demander dans son cours:
 class MarketZeroCoupon:
-    def __init__(self, parametre):
-        self.parametre = parametre
+    def __init__(self):
+        pass
 
     @staticmethod
-    def getMarketZeroCouponCurve(parametre):
-        return marketZeroCouponCurve(parametre)
+    def getMarketZeroCouponCurve(T, Betha0 = 2.61, Betha1 = -1.33, lambdas = 0.17):
+        return marketZeroCouponCurve(T)
 
     @staticmethod
     def getmarketZeroCouponInstFwdCurve(T, Betha0 = 2.61, Betha1 = -1.33, lambdas = 0.17):
-        f = lambda x: -log(getMarketZeroCouponCurve(x, Betha0 = 2.61, Betha1 = -1.33, lambdas = 0.17))
+        f = lambda x: -np.log(MarketZeroCoupon.getMarketZeroCouponCurve(T))
         return scipy.misc.derivative(f, T)
 
 #comme discuté j'ai juste écrire les classes les fonctions à l'intérieur on se les repartis
