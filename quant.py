@@ -22,12 +22,18 @@ class MarketZeroCoupon:
     @staticmethod
     def getmarketZeroCouponInstFwdCurve(t):
         f = lambda x: -np.log(MarketZeroCoupon.getMarketZeroCouponCurve(x))
-        return scipy.misc.derivative(f, t, dx = 1.25)
+        return scipy.misc.derivative(f, t, dx = 1e-3)
 
 #plot des trajectoire
-def plotSimulation(Donne_Simule):
-    Donne_Simule.plot()
-    return 0
+import matplotlib.pyplot as plt
+
+def plotSimulation(t_liste, Donne_Simule, label='Simulation'):
+    plt.plot(t_liste, Donne_Simule, label=label)
+    plt.title('Simulation')
+    plt.xlabel('Temps')
+    plt.ylabel('Données Simulées')
+    plt.legend()
+    plt.show()
 
 #fonction A(t,T)
 def A(t,T, α = 0.1, sigma = 0.15):
@@ -40,7 +46,7 @@ def A(t,T, α = 0.1, sigma = 0.15):
 #fonction Theta
 def gettheta(t, α = 0.1, sigma = 0.15):
     f = lambda x: MarketZeroCoupon.getmarketZeroCouponInstFwdCurve(x)
-    dfM = scipy.misc.derivative(f, t, dx=1.25)
+    dfM = scipy.misc.derivative(f, t, dx=1e-3)
     fM = MarketZeroCoupon.getmarketZeroCouponInstFwdCurve(t)
     return ((α*fM)+dfM+(((sigma**2)/2*α)*(1-np.exp(-2*α*t))))
 
@@ -63,12 +69,13 @@ def zeroCoupon(t, T):
 #le tau sera modifié une fois les fonction réajusté
 # l'autre partie est juste pour le calcul ponctuelle sans utilisé de liste et en utilisant la récursivité
 # le 2 sera ajusté également.
-def hullWhite(isForSimulation = False, dW = None, tn = None, tau = 1, Sigma = 0.15, a = 0.1):
+def hullWhite(isForSimulation = False, dW = None, tn = None, tau = 0.01, Sigma = 0.15, a = 0.1, seed = 42):
+    np.random.seed(42)
     if isForSimulation:
         rate = list(np.zeros(len(dW)))
-        rate[0] = 0
-        for i in range(2, len(dW)):
-            rate[i] = rate[i-1] + Sigma * (gettheta((i-1)*tau) - a * rate[i-1]) + Sigma * tau * dW[i]
+        for i in range(1, len(dW)-1):
+            #j'ai un petit souci ici. quelqu'un peut checker?
+            rate[i+1] = rate[i] + (gettheta((i)*tau) - a * rate[i]) * tau + Sigma * tau * dW[i]
         return rate
     else:
         r0 = 0
@@ -79,4 +86,3 @@ def hullWhite(isForSimulation = False, dW = None, tn = None, tau = 1, Sigma = 0.
             r_n_1 = hullWhite(tn-tau)
             return r_n_1 + Sigma * (gettheta(tn-tau) - a * r_n_1) + Sigma * tau * dW
 
-print(hullWhite(True, list(np.random.normal(0, 1, 5))))
