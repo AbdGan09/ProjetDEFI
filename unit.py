@@ -13,6 +13,8 @@ class Main:
         print(len(donne_simule))
         print(len(t_liste))
         plotSimulation(t_liste, donne_simule)
-
+    def HullWhite2():
+        k = hullWhite(isForSimulation = False, dW = None, tau = 0.01, tn = 1, Sigma = 0.15, a = 0.1, seed = 42)
+        print(k)
 Main.test_Hull_White()
-
+Main.HullWhite2()

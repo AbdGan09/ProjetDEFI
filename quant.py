@@ -75,17 +75,13 @@ def hullWhite(isForSimulation = False, dW = None, tau = 0.01, tn = None, Sigma =
     if isForSimulation:
         rate = list(np.zeros(len(dW)))
         for i in range(1, len(dW)-1):
-            #j'ai un petit souci ici. quelqu'un peut checker?
             rate[i+1] = rate[i] + (gettheta((i)*tau) - a * rate[i]) * tau + Sigma * np.sqrt(tau) * dW[i]
         return rate
     else:
         r0 = 0
         dW = np.random.normal()
-        if tn == 0:
+        if tn <= 0:
             return r0
         else:
             r_n_1 = hullWhite(isForSimulation = False, dW = dW, tau = 0.01, tn = tn-tau, Sigma = 0.15, a = 0.1, seed = 42)
             return r_n_1 + (gettheta(tn-tau) - a * r_n_1) * tau + Sigma * np.sqrt(tau) * dW
-
-k = hullWhite(isForSimulation = False, dW = None, tau = 0.01, tn = 3, Sigma = 0.15, a = 0.1, seed = 42)
-print("k= ",k)
