@@ -24,10 +24,6 @@ class MarketZeroCoupon:
         f = lambda x: -np.log(MarketZeroCoupon.getMarketZeroCouponCurve(x))
         return scipy.misc.derivative(f, t, dx = 1e-3)
 
-#comme discuté j'ai juste écrire les classes les fonctions à l'intérieur on se les repartis
-
-
-#si quelqu'un juge necessaire de faire des function suplémentaire il peux le faire l'objectif étant de mieu segmenté notre code pour le rendre plus lisible
 
 #plot des trajectoire
 import matplotlib.pyplot as plt
@@ -80,7 +76,7 @@ def hullWhite(isForSimulation = False, dW = None, tau = 0.01, tn = None, Sigma =
         rate = list(np.zeros(len(dW)))
         for i in range(1, len(dW)-1):
             #j'ai un petit souci ici. quelqu'un peut checker?
-            rate[i+1] = rate[i] + (gettheta((i)*tau) - a * rate[i]) * tau + Sigma * tau * dW[i]
+            rate[i+1] = rate[i] + (gettheta((i)*tau) - a * rate[i]) * tau + Sigma * np.sqrt(tau) * dW[i]
         return rate
     else:
         r0 = 0
@@ -88,6 +84,8 @@ def hullWhite(isForSimulation = False, dW = None, tau = 0.01, tn = None, Sigma =
         if tn == 0:
             return r0
         else:
-            r_n_1 = hullWhite(tn-tau)
-            return r_n_1 + Sigma * (gettheta(tn-tau) - a * r_n_1) * tau + Sigma * tau * dW
+            r_n_1 = hullWhite(isForSimulation = False, dW = dW, tau = 0.01, tn = tn-tau, Sigma = 0.15, a = 0.1, seed = 42)
+            return r_n_1 + (gettheta(tn-tau) - a * r_n_1) * tau + Sigma * np.sqrt(tau) * dW
 
+k = hullWhite(isForSimulation = False, dW = None, tau = 0.01, tn = 3, Sigma = 0.15, a = 0.1, seed = 42)
+print("k= ",k)

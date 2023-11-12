@@ -61,9 +61,11 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">
-    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "git-widget-placeholder": "defintion__de__la__fonction__gettheta"
+  }
+}]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -80,7 +82,14 @@
       <option name="project" value="LOCAL" />
       <updated>1699712166178</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Changes">
+      <created>1699717812394</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1699717812394</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -94,7 +103,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="origin/definition_de_la_fonction_B_t_T" />
+                        <option value="origin/SimulationBrowmien" />
                       </list>
                     </value>
                   </entry>
@@ -105,24 +114,20 @@
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Changes" />
     <option name="LAST_COMMIT_MESSAGE" value="Changes" />
   </component>
-  <component name="WindowStateProjectService">
-    <state x="231" y="79" key="Vcs.Push.Dialog.v2" timestamp="1699712172735">
-      <screen x="0" y="0" width="1280" height="672" />
-    </state>
-    <state x="231" y="79" key="Vcs.Push.Dialog.v2/0.0.1280.672@0.0.1280.672" timestamp="1699712172735" />
-    <state x="456" y="260" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1699022319339">
-      <screen x="0" y="0" width="1280" height="672" />
-    </state>
-    <state x="456" y="260" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1280.672@0.0.1280.672" timestamp="1699022319339" />
-    <state x="373" y="59" key="git4idea.branch.GitSmartOperationDialog" timestamp="1699712059811">
-      <screen x="0" y="0" width="1280" height="672" />
-    </state>
-    <state x="373" y="59" key="git4idea.branch.GitSmartOperationDialog/0.0.1280.672@0.0.1280.672" timestamp="1699712059811" />
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/quant.py</url>
+          <line>89</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
