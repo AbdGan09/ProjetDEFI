@@ -20,7 +20,7 @@ class MarketZeroCoupon:
     @staticmethod
     def getmarketZeroCouponInstFwdCurve(t):
         f = lambda x: -np.log(MarketZeroCoupon.getMarketZeroCouponCurve(x))
-        return scipy.misc.derivative(f, t)
+        return scipy.misc.derivative(f, t, dx=1e-3)
 
 #comme discuté j'ai juste écrire les classes les fonctions à l'intérieur on se les repartis
 
@@ -44,7 +44,7 @@ def A(t,T, α=0.1 ,sigma=0.15):
 #fonction Theta
 def gettheta(t,α=0.1 ,sigma=0.15):
     f = lambda x: MarketZeroCoupon.getmarketZeroCouponInstFwdCurve(x)
-    dfM = scipy.misc.derivative(f, t)
+    dfM = scipy.misc.derivative(f, t, dx=1e-3)
 
     fM = MarketZeroCoupon.getmarketZeroCouponInstFwdCurve(t)
 
