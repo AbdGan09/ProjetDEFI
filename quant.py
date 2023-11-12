@@ -24,6 +24,11 @@ class MarketZeroCoupon:
         f = lambda x: -np.log(MarketZeroCoupon.getMarketZeroCouponCurve(x))
         return scipy.misc.derivative(f, t, dx = 1e-3)
 
+#comme discuté j'ai juste écrire les classes les fonctions à l'intérieur on se les repartis
+
+
+#si quelqu'un juge necessaire de faire des function suplémentaire il peux le faire l'objectif étant de mieu segmenté notre code pour le rendre plus lisible
+
 #plot des trajectoire
 import matplotlib.pyplot as plt
 
