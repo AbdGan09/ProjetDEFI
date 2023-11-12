@@ -74,7 +74,7 @@ def zeroCoupon(t, T):
 #le tau sera modifié une fois les fonction réajusté
 # l'autre partie est juste pour le calcul ponctuelle sans utilisé de liste et en utilisant la récursivité
 # le 2 sera ajusté également.
-def hullWhite(isForSimulation = False, dW = None, tn = None, tau = 0.01, Sigma = 0.15, a = 0.1, seed = 42):
+def hullWhite(isForSimulation = False, dW = None, tau = 0.01, tn = None, Sigma = 0.15, a = 0.1, seed = 42):
     np.random.seed(42)
     if isForSimulation:
         rate = list(np.zeros(len(dW)))
@@ -89,5 +89,5 @@ def hullWhite(isForSimulation = False, dW = None, tn = None, tau = 0.01, Sigma =
             return r0
         else:
             r_n_1 = hullWhite(tn-tau)
-            return r_n_1 + Sigma * (gettheta(tn-tau) - a * r_n_1) + Sigma * tau * dW
+            return r_n_1 + Sigma * (gettheta(tn-tau) - a * r_n_1) * tau + Sigma * tau * dW
 
