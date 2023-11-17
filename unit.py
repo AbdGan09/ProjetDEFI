@@ -13,8 +13,24 @@ class Main:
         print(len(donne_simule))
         print(len(t_liste))
         plotSimulation(t_liste, donne_simule)
-    def HullWhite2():
-        k = hullWhite(isForSimulation = False, dW = None, tau = 0.01, tn = 1, Sigma = 0.15, a = 0.1, seed = 42)
+
+    @staticmethod
+    def HullWhite2(isForSimulation = False, dW = None, tau = 0.01, tn = 1):
+        k = hullWhite(isForSimulation, dW, tau, tn)
         print(k)
+
+    @staticmethod
+    def testTrajectoire(N=1000, T=1):
+        trajectoires = generateurTrajectoire(N, T)
+        print(trajectoires.head(2))
+        plotSimulation(trajectoires.columns, list(trajectoires.T.values))
+
+    @staticmethod
+    def testSimulationTaux(N=4, T=1):
+        simulation_Taux = simulationProcessusTaux(N, T, True)
+        print(simulation_Taux)
+        plotSimulation(simulation_Taux.columns, list(simulation_Taux.T.values))
+
 Main.test_Hull_White()
-Main.HullWhite2()
+Main.testTrajectoire(100)
+Main.testSimulationTaux(100)
