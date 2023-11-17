@@ -20,7 +20,7 @@ class MarketZeroCoupon:
     @staticmethod
     def getmarketZeroCouponInstFwdCurve(t):
         f = lambda x: -np.log(MarketZeroCoupon.getMarketZeroCouponCurve(x))
-        return scipy.misc.derivative(f, t, dx = 1e-3)
+        return scipy.misc.derivative(f, t, dx = 1e-7)
 
 
 def plotSimulation(t_liste, Donne_Simule):
@@ -42,7 +42,7 @@ def A(t,T, α = 0.1, sigma = 0.15):
 # fonction Theta
 def gettheta(t, α = 0.1, sigma = 0.15):
     f = lambda x: MarketZeroCoupon.getmarketZeroCouponInstFwdCurve(x)
-    dfM = scipy.misc.derivative(f, t, dx = 1e-3)
+    dfM = scipy.misc.derivative(f, t, dx = 1e-7)
     fM = MarketZeroCoupon.getmarketZeroCouponInstFwdCurve(t)
     return ((α*fM)+dfM+(((sigma**2)/2*α)*(1-np.exp(-2*α*t))))
 
@@ -78,5 +78,5 @@ def hullWhite(isForSimulation = False, dW = None, tau = 0.01, tn = None, Sigma =
         if tn <= 0:
             return r0
         else:
-            r_n_1 = hullWhite(isForSimulation = False, dW = dW, tau = 0.01, tn = tn-tau)
+            r_n_1 = hullWhite(False, dW, tau, tn-tau)
             return r_n_1 + (gettheta(tn-tau) - a * r_n_1) * tau + Sigma * np.sqrt(tau) * dW

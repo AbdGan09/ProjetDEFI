@@ -21,8 +21,17 @@ def generateurTrajectoire(N, T):
 
 
 #Simulation du processus
-def simulationProcessusTaux():
-    pass
+def simulationProcessusTaux(N=1000, T=1, isForSimulation = True):
+    W =  generateurTrajectoire(N+2, T)
+    dW = W.diff(axis=1, periods=1)
+    tau = T/N
+    for trajectoire in W.index:
+        W.loc[trajectoire] = hullWhite(isForSimulation, list(dW.loc[trajectoire]), tau)
+    rate_process = W[W.columns[1:N+1]]
+    rate_process = rate_process.iloc[:N]
+    rate_process.columns =["t_"+str(i) for i in range(N)]
+    rate_process.index = ["trajectoire_" + str(i) for i in range(1,N+1)]
+    return rate_process
 
 
 #Simulation du discount
