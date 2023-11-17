@@ -28,7 +28,6 @@ def plotSimulation(t_liste, Donne_Simule):
     plt.title('Simulation')
     plt.xlabel('Temps')
     plt.ylabel('Données Simulées')
-    plt.legend()
     plt.show()
 
 
