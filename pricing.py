@@ -19,10 +19,18 @@ def simulationProcessusTaux():
 
 
 #Simulation du discount
-def simulationP():
-    pass
+def simulationP(t,T):
+    A = A(t,T, α = 0.1, sigma = 0.15)
+    B = BondPrice(t, T, α=0.1)
+    r = simulationProcessusTaux(t,T)
+    return (A*np.exp(-B*r))
 
 
 #Simulation du Vrec
-def simulationVrect():
-    pass
+def simulationVrect(N,K,t,T,𝜏= 0.5):
+    Vrec = []
+    for i in range(1,T+1):
+        if i>t:
+            L = (1/𝜏)*((simulationP(t,i-1)/simulationP(t,i))-1)
+            Vrec+=N*𝜏*(K-L)*simulationP(t,i)
+    return(Vrec)
