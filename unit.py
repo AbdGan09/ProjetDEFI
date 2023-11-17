@@ -16,14 +16,14 @@ class Main:
 
     @staticmethod
     def HullWhite2():
-        k = hullWhite(isForSimulation = False, dW = None, tau = 0.01, tn = 1, Sigma = 0.15, a = 0.1, seed = 42)
+        k = hullWhite(isForSimulation = False, dW = None, tau = 0.01, tn = 1)
         print(k)
 
     @staticmethod
     def testTrajectoire(N=1000, T=1):
         trajectoires = generateurTrajectoire(N, T)
         print(trajectoires.head(2))
-        plotSimulation(list(trajectoires.T.values), trajectoires.columns)
+        plotSimulation(trajectoires.columns, list(trajectoires.T.values))
 
 Main.test_Hull_White()
 Main.HullWhite2()
