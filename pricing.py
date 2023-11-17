@@ -28,7 +28,7 @@ def simulationP(t,T):
 
 #Simulation du Vrec
 def simulationVrect(N,K,t,T,𝜏= 0.5):
-    Vrec = []
+    Vrec = 0
     for i in range(1,T+1):
         if i>t:
             L = (1/𝜏)*((simulationP(t,i-1)/simulationP(t,i))-1)
