@@ -31,6 +31,19 @@ class Main:
         print(simulation_Taux)
         plotSimulation(simulation_Taux.columns, list(simulation_Taux.T.values))
 
-Main.test_Hull_White()
-Main.testTrajectoire(100)
-Main.testSimulationTaux(100)
+    def testSimulationP(n, T=1):
+        simulation_P = simulationP(n,T)
+        print(simulation_P)
+        simulation_P = pd.DataFrame(simulation_P)
+        plotSimulation(simulation_P.columns, list(simulation_P.T.values))
+    def testSimulationVrec(n,T=1):
+        simulation_Vrec = simulationVrec(n,N=100,T=1,𝜏= 0.5)
+        print(simulation_Vrec)
+        simulation_Vrec = pd.DataFrame(simulation_Vrec)
+        plotSimulation(simulation_Vrec.columns, list(simulation_Vrec.T.values))
+
+#Main.test_Hull_White()
+#Main.testTrajectoire(100)
+#Main.testSimulationTaux(100)
+#Main.testSimulationP(100)
+Main.testSimulationVrec(10)

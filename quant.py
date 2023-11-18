@@ -32,7 +32,7 @@ def plotSimulation(t_liste, Donne_Simule):
 
 
 # fonction A(t,T)
-def A(t,T, α = 0.1, sigma = 0.15):
+def getA(t,T, α = 0.1, sigma = 0.15):
     B = BondPrice(t, T)
     fM = MarketZeroCoupon.getmarketZeroCouponInstFwdCurve(t)
     e = np.exp((-B*fM)-((sigma**2*((np.exp(-α*T)-np.exp(-α*t))**2)*(np.exp(2*α*t)-1))/(4*α**3)))

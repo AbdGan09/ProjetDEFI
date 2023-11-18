@@ -22,7 +22,7 @@ def generateurTrajectoire(N, T):
 
 #Simulation du processus
 def simulationProcessusTaux(N=1000, T=1, isForSimulation = True):
-    W =  generateurTrajectoire(N+2, T)
+    W = generateurTrajectoire(N+2, T)
     dW = W.diff(axis=1, periods=1)
     tau = T/N
     for trajectoire in W.index:
@@ -35,18 +35,43 @@ def simulationProcessusTaux(N=1000, T=1, isForSimulation = True):
 
 
 #Simulation du discount
-def simulationP(t,T):
-    A = A(t,T, α = 0.1, sigma = 0.15)
-    B = BondPrice(t, T, α=0.1)
-    r = simulationProcessusTaux(t,T)
-    return (A*np.exp(-B*r))
+# n = le nombre de trajectoires
+
+# Il faut différencier n le nombre de trajectoires et le nombre d'échéances
+# à t=0, le modèle ne marche pas à cause de la fonction de Siegel
+
+def simulationP(n,T,t=0,trajectoire=0,isForSimulation = True):
+    r = simulationProcessusTaux(n, T)
+    r = np.array(r)
+    if isForSimulation:
+        t = T/n
+        A = [0]
+        B = [0]
+        for i in range(1,n):
+            A.append(getA(i*t,T, α = 0.1, sigma = 0.15))
+            B.append(BondPrice(i*t, T, α=0.1))
+
+
+        B = np.array(B)
+        A = np.array(A)
+        return (A*np.exp(-1*B*r))
+    else:
+        return(getA(t,T, α = 0.1, sigma = 0.15)*np.exp(-BondPrice(t, T, α=0.1)*r[trajectoire][t]))
 
 
 #Simulation du Vrec
-def simulationVrect(N,K,t,T,𝜏= 0.5):
-    Vrec = 0
-    for i in range(1,T+1):
-        if i>t:
-            L = (1/𝜏)*((simulationP(t,i-1)/simulationP(t,i))-1)
-            Vrec+=N*𝜏*(K-L)*simulationP(t,i)
+#N: notional
+def simulationVrec(n,N,T,𝜏= 0.5):
+    t = T/n
+    P = simulationP(n,T)
+    K = [0]*n
+    L = P.copy()
+    for i in range(n):
+        S = sum([simulationP(n, T=j * t, t=1, trajectoire=i, isForSimulation=False) for j in range(1, n)])
+        K[i] = (simulationP(n,T=1,t=1,trajectoire=i,isForSimulation = False) - (simulationP(n,T=n,t=1,trajectoire=i,isForSimulation = False)))/S
+        for j in range(1,(n-1)):
+            L[i][j] = (1 / 𝜏) * ((P[i][j] / P[i][j+1]) - 1)
+
+    K = np.array(([K]*n))
+    Vrec = N * 𝜏 * (K - L) * P
     return(Vrec)
