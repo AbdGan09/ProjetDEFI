@@ -16,8 +16,8 @@ class MarketZeroCoupon:
         if t == 0:
             return 1
         else:
-            numerator = 1 - math.exp(-self.x * t)
-            denominator = self.x * t
+            numerator = 1 - math.exp(-self.x)
+            denominator = self.x
             return 1 + (numerator / denominator) 
     
     @staticmethod
@@ -25,8 +25,9 @@ class MarketZeroCoupon:
         if t == 0:
             return 0
         else:
-            P_t = self.MarketZeroCouponCurve(t)
-            return -P_t / (self.x * (t ** 2))
+            numerator_Pt = math.exp(self.x)*(x-1)+1
+            denominator_Pt = (math.exp(self.x)-1-x)*x
+            return numerator_Pt/denominator_Pt
 
 
     @staticmethod
