@@ -1,4 +1,6 @@
 #lieu pour mettre les class ou fonction de test:
+import numpy as np
+
 from pricing import *
 from quant import *
 
@@ -42,8 +44,19 @@ class Main:
         simulation_Vrec = pd.DataFrame(simulation_Vrec)
         plotSimulation(simulation_Vrec.columns, list(simulation_Vrec.T.values))
 
+    def courbe_fwdinst(t, α=0.1, sigma=0.15):
+        x = np.linspace(1,t,100)
+        print(x)
+        courbe = []
+        for j in x:
+            courbe.append(MarketZeroCoupon.getmarketZeroCouponInstFwdCurve(j))
+        print(courbe)
+        plt.plot(x,courbe)
+        plt.show()
+
+Main.courbe_fwdinst(10)
 #Main.test_Hull_White()
 #Main.testTrajectoire(100)
 #Main.testSimulationTaux(100)
 #Main.testSimulationP(100)
-Main.testSimulationVrec(10)
+#Main.testSimulationVrec(10)
