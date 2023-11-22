@@ -54,9 +54,9 @@ class Main:
         plt.plot(x,courbe)
         plt.show()
 
-Main.courbe_fwdinst(10)
+#Main.courbe_fwdinst(10)
 #Main.test_Hull_White()
 #Main.testTrajectoire(100)
 #Main.testSimulationTaux(100)
 #Main.testSimulationP(100)
-#Main.testSimulationVrec(10)
+Main.testSimulationVrec(10)

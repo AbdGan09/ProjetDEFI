@@ -61,14 +61,13 @@ def simulationP(n,T,t=0,trajectoire=0,isForSimulation = True):
 
 #Simulation du Vrec
 #N: notional
-def simulationVrec(n,N,T,𝜏= 0.5):
+def simulationVrec(n,N,T,r=0.03,𝜏= 0.5):
     t = T/n
     P = simulationP(n,T)
-    K = [0]*n
+    K = [r]*n
     L = P.copy()
     for i in range(n):
         S = sum([simulationP(n, T=j * t, t=1, trajectoire=i, isForSimulation=False) for j in range(1, n)])
-        K[i] = (simulationP(n,T=1,t=1,trajectoire=i,isForSimulation = False) - (simulationP(n,T=n,t=1,trajectoire=i,isForSimulation = False)))/S
         for j in range(1,(n-1)):
             L[i][j] = (1 / 𝜏) * ((P[i][j] / P[i][j+1]) - 1)
 
