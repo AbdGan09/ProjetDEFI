@@ -1,5 +1,6 @@
 #developpement de tout ce qui est en lien avec la partie pricing
 #importation library
+import numpy as np
 
 from quant import *
 
@@ -9,28 +10,26 @@ def pricingSwap():
 
 
 #simulation de trajectoire
-def generateurTrajectoire(N, T):
-    dt = T / N
-    Normal_Matrix = np.random.normal(0, np.sqrt(dt), (N, N - 1))
+def generateurTrajectoire(n_traject, n_obser, T):
+    dt = T / n_obser
+    Normal_Matrix = np.random.normal(0, np.sqrt(dt), (n_traject, n_obser - 1))
     Brownien_process = Normal_Matrix.cumsum(axis=1)
     Brownien_process = np.insert(Brownien_process, 0, 0, axis=1)
-    Brownien_process_Df = pd.DataFrame(data=Brownien_process, columns=["t_" + str(i) for i in range(N)], index=["trajectoire_" + str(i) for i in range(N)])
-    #dW_Brownien_process = Brownien_process_Df.diff(axis=1, periods=1) In case of
-    #dW_Brownien_process["t_0"] = np.zeros(N)
+    Brownien_process_Df = pd.DataFrame(data=Brownien_process, columns=np.linspace(0, T, n_obser), index=["trajectoire_" + str(i) for i in range(n_traject)])
     return Brownien_process_Df
 
 
 #Simulation du processus
-def simulationProcessusTaux(N=1000, T=1, isForSimulation = True):
-    W = generateurTrajectoire(N+2, T)
+def simulationProcessusTaux(n_traject, n_obser, T=1, isForSimulation = True):
+    W = generateurTrajectoire(n_traject, n_obser+2, T)
     dW = W.diff(axis=1, periods=1)
-    tau = T/N
+    dt = T/n_obser
     for trajectoire in W.index:
-        W.loc[trajectoire] = hullWhite(isForSimulation, list(dW.loc[trajectoire]), tau)
-    rate_process = W[W.columns[1:N+1]]
-    rate_process = rate_process.iloc[:N]
-    rate_process.columns =["t_"+str(i) for i in range(N)]
-    rate_process.index = ["trajectoire_" + str(i) for i in range(1,N+1)]
+        W.loc[trajectoire] = hullWhite(isForSimulation, list(dW.loc[trajectoire]), dt)
+    rate_process = W[W.columns[1:n_obser+1]]
+    rate_process = rate_process.iloc[:n_traject]
+    rate_process.columns =np.linspace(0, T, n_obser)
+    rate_process.index = ["trajectoire_" + str(i) for i in range(0, n_traject)]
     return rate_process
 
 

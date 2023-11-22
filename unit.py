@@ -22,14 +22,14 @@ class Main:
         print(k)
 
     @staticmethod
-    def testTrajectoire(N=1000, T=1):
-        trajectoires = generateurTrajectoire(N, T)
+    def testTrajectoire(n_traject=4, n_obser=100,T=1):
+        trajectoires = generateurTrajectoire(n_traject, n_obser, T)
         print(trajectoires.head(2))
         plotSimulation(trajectoires.columns, list(trajectoires.T.values))
 
     @staticmethod
-    def testSimulationTaux(N=4, T=1):
-        simulation_Taux = simulationProcessusTaux(N, T, True)
+    def testSimulationTaux(n_traject=4, n_obser=1000, T=1):
+        simulation_Taux = simulationProcessusTaux(n_traject, n_obser, T, True)
         print(simulation_Taux)
         plotSimulation(simulation_Taux.columns, list(simulation_Taux.T.values))
 
@@ -56,7 +56,7 @@ class Main:
 
 #Main.courbe_fwdinst(10)
 #Main.test_Hull_White()
-#Main.testTrajectoire(100)
-#Main.testSimulationTaux(100)
+#Main.testTrajectoire()
+Main.testSimulationTaux()
 #Main.testSimulationP(100)
 Main.testSimulationVrec(10)
