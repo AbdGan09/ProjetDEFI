@@ -1,6 +1,7 @@
 #developpement de tout ce qui est en lien avec la partie pricing
 #importation library
 import numpy as np
+import math
 
 from quant import *
 
@@ -10,7 +11,7 @@ def pricingSwap():
 
 
 #simulation de trajectoire
-def generateurTrajectoire(n_traject, n_obser, T):
+def generateurTrajectoire(n_traject, n_obser,T, 𝜏= 0.5):
     dt = T / n_obser
     Normal_Matrix = np.random.normal(0, np.sqrt(dt), (n_traject, n_obser - 1))
     Brownien_process = Normal_Matrix.cumsum(axis=1)
@@ -28,48 +29,61 @@ def simulationProcessusTaux(n_traject, n_obser, T=1, isForSimulation = True):
         W.loc[trajectoire] = hullWhite(isForSimulation, list(dW.loc[trajectoire]), dt)
     rate_process = W[W.columns[1:n_obser+1]]
     rate_process = rate_process.iloc[:n_traject]
-    rate_process.columns =np.linspace(0, T, n_obser)
+    rate_process.columns =[round(i*dt,1) for i in range(n_obser)]
     rate_process.index = ["trajectoire_" + str(i) for i in range(0, n_traject)]
     return rate_process
 
 
 #Simulation du discount
-# n = le nombre de trajectoires
-
-# Il faut différencier n le nombre de trajectoires et le nombre d'échéances
 # à t=0, le modèle ne marche pas à cause de la fonction de Siegel
-
-def simulationP(n,T,t=0,trajectoire=0,isForSimulation = True):
-    r = simulationProcessusTaux(n, T)
-    r = np.array(r)
-    if isForSimulation:
-        t = T/n
-        A = [0]
-        B = [0]
-        for i in range(1,n):
-            A.append(getA(i*t,T, α = 0.1, sigma = 0.15))
-            B.append(BondPrice(i*t, T, α=0.1))
-
-
-        B = np.array(B)
-        A = np.array(A)
-        return (A*np.exp(-1*B*r))
-    else:
-        return(getA(t,T, α = 0.1, sigma = 0.15)*np.exp(-BondPrice(t, T, α=0.1)*r[trajectoire][t]))
+# t une date de paiement antérieure à T la maturité
+def simulationP(n_traject,n_obser, T, R, t, 𝜏):
+    r = simulationProcessusTaux(n_traject, n_obser, T)
+    r = r.to_dict('index')
+    dt = T / n_obser
+    v=t
+    P=[]
+    L=[]
+    p_={}
+    l_={}
+    for m in range(n_traject):
+        j=dt
+        w=round(j,1)
+        while j < T:
+            t=v
+            p = []
+            l = []
+            while t<T :
+                if j < t:
+                    w = round(j, 1)
+                    p.append(getA(j,t, α = 0.1, sigma = 0.15)*math.exp(-1*BondPrice(j, t, α=0.1)*r['trajectoire_'+str(m)][w]))
+                    l.append(R-(1/𝜏)*((getA(j,t-𝜏, α = 0.1, sigma = 0.15)*math.exp(-1*BondPrice(j, t-𝜏, α=0.1)*r['trajectoire_'+str(m)][w])/getA(j,t, α = 0.1, sigma = 0.15)*math.exp(-1*BondPrice(j, t, α=0.1)*r['trajectoire_'+str(m)][w]))-1))
+                    t+=𝜏
+                else:
+                    t+=𝜏
+            p_[j]=p
+            l_[j]=l
+            j += dt
+        P.append(p_)
+        L.append(l_)
+    K = P
+    P = pd.DataFrame(P)
+    L = pd.DataFrame(L)
+    return (L, P, K)
 
 
 #Simulation du Vrec
 #N: notional
-def simulationVrec(n,N,T,r=0.03,𝜏= 0.5):
-    t = T/n
-    P = simulationP(n,T)
-    K = [r]*n
-    L = P.copy()
-    for i in range(n):
-        S = sum([simulationP(n, T=j * t, t=1, trajectoire=i, isForSimulation=False) for j in range(1, n)])
-        for j in range(1,(n-1)):
-            L[i][j] = (1 / 𝜏) * ((P[i][j] / P[i][j+1]) - 1)
-
-    K = np.array(([K]*n))
-    Vrec = N * 𝜏 * (K - L) * P
+def simulationVrec(n_traject,n_obser, N, T, r=0.03,𝜏= 0.5):
+    dt = T / n_obser
+    Vrec = []
+    V={}
+    L, P, K = simulationP(n_traject, n_obser, T, r, 1, 𝜏)
+    for m in range(n_traject):
+        for t_obs in K[0].keys():
+            for i in range(int(T/𝜏)):
+                L,P,_ = simulationP(n_traject,n_obser, T,r, i, 𝜏)
+                V[t_obs]=N*sum(np.multiply(np.array([L.iloc[[m,t_obs]]]),np.array([P.iloc[[m,t_obs]]])))
+        Vrec.append(V)
     return(Vrec)
+
