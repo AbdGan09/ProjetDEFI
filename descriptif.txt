@@ -13,7 +13,7 @@ dans la réunion précédente nous avons donné des noms à chaque fonctions afi
 
 par rapport à l'utilisation de Git:
 
-- vous pouvez télecharger git bash sa prendra peut de temps et sa facilite l'interaction avec github ou utiliser directement pycharm
+- vous pouvez télecharger git bash ça prendra peu de temps et sa facilite l'interaction avec github ou utiliser directement pycharm
 
 les commandes dont vous aurez besoin de base:
 git status: pour checké vos modificatio,
