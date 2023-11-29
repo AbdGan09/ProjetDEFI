@@ -7,7 +7,7 @@ Nous avons décider comme Mayssa l'avait préciser dans le groupe de structurer 
 
 une partie pricing ou l'on aura que les code en lien avec le swap
 Une partie quant ou l'on développera les bibliothèques dont on aura besoin dans la partie pricing
-Une partie Unit dédié uniquement pour l'exécution du code, affissage des plots. etc.
+Une partie Unit dédié uniquement pour l'exécution du code, affichage des plots. etc.
 
 dans la réunion précédente nous avons donné des noms à chaque fonctions afin que cela ne gène pas le développement des autres et préciser le type de sortie
 
