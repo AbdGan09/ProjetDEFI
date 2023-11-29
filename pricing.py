@@ -33,28 +33,38 @@ def simulationProcessusTaux(n_traject, n_obser, T=1,isForSimulation = True):
     rate_process.index = ["trajectoire_" + str(i) for i in range(0, n_traject)]
     return rate_process
 
+from decimal import localcontext, Decimal, ROUND_HALF_UP
+# Définir le contexte décimal avec l'arrondi vers le haut (ROUND_HALF_UP)
+#localcontext().rounding = ROUND_HALF_UP
+def custom_round(value, decimals=3):
+    return Decimal(str(value)).quantize(Decimal('1e-{0}'.format(decimals)),ROUND_HALF_UP)
 
 #Simulation du discount
 # à t=0, le modèle ne marche pas à cause de la fonction de Siegel
 # t une date de paiement antérieure à T la maturité
 def simulationP(n_traject,n_obser, T, R, t, 𝜏):
     r = simulationProcessusTaux(n_traject, n_obser, T)
+    itterations = r.columns
     r = r.to_dict('index')
-    dt = T / n_obser
+    dt = float(custom_round(custom_round(T / n_obser),3))
+    itterations+=dt
+    print(itterations)
     v=t
     P=[]
     L=[]
     for m in range(n_traject):
+        print('m',m)
         p_ = {}
         l_ = {}
         j=dt
-        #w=round(j,3)
         w=j
-        while j <= T:
+        for j in itterations:
+            print(j)
             t=v
             p = []
             l = []
             while t<=T :
+                #print('t',t)
                 #w = round(j, 3)
                 w=j
                 if j <= t:
@@ -65,26 +75,30 @@ def simulationP(n_traject,n_obser, T, R, t, 𝜏):
                     t+=𝜏
             p_[j]=p
             l_[j]=l
-            j += dt
         P.append(p_)
         L.append(l_)
+        m += 1
     K = P
     P = pd.DataFrame(P)
     #print(P)
     L = pd.DataFrame(L)
+
     return (L, P, K)
 
 #Simulation du Vrec
 #N: notional
 def simulationVrec(n_traject,n_obser, N, T, r=0.03,𝜏= 0.5):
-    dt = T / n_obser
+    dt = float(custom_round(custom_round(T / n_obser),3))
+    #print(float(dt))
     Vrec = {}
     L, P, K = simulationP(n_traject, n_obser, T, r, 1, 𝜏)
+    print(K[0].keys())
     for m in range(n_traject):
         V = {}
         for t_obs in K[0].keys():
             d=0
             for i in range(int(T/𝜏)-1):
+                print('i',i)
                 L,P,_ = simulationP(n_traject,n_obser, T,r, i, 𝜏)
 
                 if L.iloc[m][t_obs]!=[] and P.iloc[m][t_obs]!=[]:
@@ -92,7 +106,7 @@ def simulationVrec(n_traject,n_obser, N, T, r=0.03,𝜏= 0.5):
                     h = L.iloc[m][t_obs]
                     d+=N*(h[0]*g[0])
             V[t_obs]=d
-
+        print('mVrec',m)
         Vrec[m]=V
     Vrec = pd.DataFrame(Vrec).T
     return(Vrec)
