@@ -36,7 +36,7 @@ class Main:
         plotSimulation(simulation_Taux.columns, list(simulation_Taux.T.values))
 
     def testSimulationP(n_traject=4, n_obser=10, T=5, t=4.5, 𝜏=1, R=0.03):
-        n_obser = T * n_obser
+        #n_obser = T * n_obser
         L,simulation_P,_ = simulationP(n_traject,n_obser, T,R, t, 𝜏)
         #simulation_P.to_clipboard()
         #L.to_clipboard()
@@ -44,7 +44,7 @@ class Main:
         #simulation_P = pd.DataFrame(simulation_P)
         #plotSimulation(simulation_P.columns, list(simulation_P.T.values))
 
-    def testSimulationVrec(n_traject=3,n_obser=10, N=100, T=5, r=0.03,𝜏= 0.5):
+    def testSimulationVrec(n_traject=4,n_obser=1000, N=1, T=2, r=0.03,𝜏= 0.5):
         simulation_Vrec = simulationVrec(n_traject,n_obser, N, T, r=0.03,𝜏= 0.5)
         print(simulation_Vrec)
         simulation_Vrec.T.plot()
