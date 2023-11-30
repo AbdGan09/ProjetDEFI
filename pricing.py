@@ -44,13 +44,14 @@ def custom_round(value, decimals=3):
 # t une date de paiement antérieure à T la maturité
 def simulationP(n_traject,n_obser, T, R, t, 𝜏):
     r = simulationProcessusTaux(n_traject, n_obser, T)
-    itterations = r.columns
+    iterations = r.columns
+    print(iterations)
     r = r.to_dict('index')
     dt = float(custom_round(custom_round(custom_round(T / n_obser),3)))
-    itterations += dt
-    itterations = np.round(itterations,3)
-    #print(itterations)
-    itteration = [0.0] + itterations.tolist()
+    iterations += dt
+    iterations = np.round(iterations,3)
+    print(iterations)
+    iteration = [0.0] + iterations.tolist()
     v=t
     P=[]
     L=[]
@@ -60,12 +61,12 @@ def simulationP(n_traject,n_obser, T, R, t, 𝜏):
         l_ = {}
         j=dt
         w=j
-        for j in itterations:
+        for j in iterations:
             t=float(v)
-            i = list(itteration).index(t)
+            i = list(iteration).index(t)
             p = []
             l = []
-            for t in itteration[i:]:
+            for t in iteration[i:]:
                 w=j
                 if j <= t:
                     p.append(getA(j,t, α = 0.1, sigma = 0.15)*math.exp(-1*BondPrice(j, t, α=0.1)*r['trajectoire_'+str(m)][round(w-dt,3)]))
