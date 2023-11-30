@@ -49,7 +49,7 @@ def simulationP(n_traject,n_obser, T, R, t, 𝜏):
     dt = float(custom_round(custom_round(custom_round(T / n_obser),3)))
     itterations += dt
     itterations = np.round(itterations,3)
-    print(itterations)
+    #print(itterations)
     itteration = [0.0] + itterations.tolist()
     v=t
     P=[]
@@ -66,15 +66,10 @@ def simulationP(n_traject,n_obser, T, R, t, 𝜏):
             p = []
             l = []
             for t in itteration[i:]:
-                #print('t',t)
-                #w = round(j, 3)
                 w=j
                 if j <= t:
                     p.append(getA(j,t, α = 0.1, sigma = 0.15)*math.exp(-1*BondPrice(j, t, α=0.1)*r['trajectoire_'+str(m)][round(w-dt,3)]))
                     l.append(R-(1/𝜏)*((getA(j,t-𝜏, α = 0.1, sigma = 0.15)*math.exp(-1*BondPrice(j, t-𝜏, α=0.1)*r['trajectoire_'+str(m)][round(w-dt,3)])/getA(j,t, α = 0.1, sigma = 0.15)*math.exp(-1*BondPrice(j, t, α=0.1)*r['trajectoire_'+str(m)][round(w-dt,3)]))-1))
-                    #t+=𝜏
-                #else:
-                    #t+=𝜏
             p_[j]=p
             l_[j]=l
         P.append(p_)
@@ -82,7 +77,6 @@ def simulationP(n_traject,n_obser, T, R, t, 𝜏):
         m += 1
     K = P
     P = pd.DataFrame(P)
-    #print(P)
     L = pd.DataFrame(L)
 
     return (L, P, K)
@@ -91,7 +85,6 @@ def simulationP(n_traject,n_obser, T, R, t, 𝜏):
 #N: notional
 def simulationVrec(n_traject,n_obser, N, T, r=0.03,𝜏= 0.5):
     dt = float(custom_round(custom_round(custom_round(T / n_obser),3)))
-    #print(float(dt))
     Vrec = {}
     L, P, K = simulationP(n_traject, n_obser, T, r, 1, 𝜏)
     for m in range(n_traject):
@@ -99,7 +92,7 @@ def simulationVrec(n_traject,n_obser, N, T, r=0.03,𝜏= 0.5):
         for t_obs in K[0].keys():
             d=0
             for i in  [0.0]+[k+𝜏 for k in range(T)]+[float(T)]:
-                print('i',i)
+                #print('i',i)
                 L,P,_ = simulationP(n_traject,n_obser, T,r, i, 𝜏)
 
                 if L.iloc[m][t_obs]!=[] and P.iloc[m][t_obs]!=[]:
@@ -107,7 +100,7 @@ def simulationVrec(n_traject,n_obser, N, T, r=0.03,𝜏= 0.5):
                     h = L.iloc[m][t_obs]
                     d+=N*(h[0]*g[0])
             V[t_obs]=d
-        print('mVrec',m)
+        #print('mVrec',m)
         Vrec[m]=V
     Vrec = pd.DataFrame(Vrec).T
     return(Vrec)
