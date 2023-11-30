@@ -45,7 +45,6 @@ def custom_round(value, decimals=3):
 def simulationP(n_traject,n_obser, T, R, t, 𝜏):
     r = simulationProcessusTaux(n_traject, n_obser, T)
     iterations = r.columns
-    print(iterations)
     r = r.to_dict('index')
     dt = float(custom_round(custom_round(custom_round(T / n_obser),3)))
     iterations += dt
