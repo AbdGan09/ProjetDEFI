@@ -42,39 +42,66 @@ def custom_round(value, decimals=3):
 #Simulation du discount
 # à t=0, le modèle ne marche pas à cause de la fonction de Siegel
 # t une date de paiement antérieure à T la maturité
-def simulationP(n_traject,n_obser, T, R, t, 𝜏):
+def simulationP(n_traject,n_obser, T, R, t, 𝜏, m=None):
     r = simulationProcessusTaux(n_traject, n_obser, T)
     iterations = r.columns
     r = r.to_dict('index')
     dt = float(custom_round(custom_round(custom_round(T / n_obser),3)))
     iterations += dt
     iterations = np.round(iterations,3)
-    print(iterations)
+    #print(iterations)
     iteration = [0.0] + iterations.tolist()
     v=t
-    P=[]
-    L=[]
-    for m in range(n_traject):
-        print('m',m)
+    P = []
+    L = []
+    if m==None:
+        for m in range(n_traject):
+            print('m_',m)
+            p_ = {}
+            l_ = {}
+            j=dt
+            w=j
+            for j in iterations:
+                t=float(v)
+                i = list(iteration).index(t)
+                p = []
+                l = []
+                for t in iteration[i:]:
+                    w=j
+                    if j <= t:
+                        p.append(getA(j,t, α = 0.1, sigma = 0.15)*math.exp(-1*BondPrice(j, t, α=0.1)*r['trajectoire_'+str(m)][round(w-dt,3)]))
+                        l.append(R-(1/𝜏)*((getA(j,t-𝜏, α = 0.1, sigma = 0.15)*math.exp(-1*BondPrice(j, t-𝜏, α=0.1)*r['trajectoire_'+str(m)][round(w-dt,3)])/getA(j,t, α = 0.1, sigma = 0.15)*math.exp(-1*BondPrice(j, t, α=0.1)*r['trajectoire_'+str(m)][round(w-dt,3)]))-1))
+                p_[j]=p
+                l_[j]=l
+            P.append(p_)
+            L.append(l_)
+
+    else:
+        #print('dt',dt)
         p_ = {}
         l_ = {}
-        j=dt
-        w=j
+        j = dt
+        w = j
         for j in iterations:
-            t=float(v)
+            t = float(v)
             i = list(iteration).index(t)
             p = []
             l = []
             for t in iteration[i:]:
-                w=j
+                w = j
                 if j <= t:
-                    p.append(getA(j,t, α = 0.1, sigma = 0.15)*math.exp(-1*BondPrice(j, t, α=0.1)*r['trajectoire_'+str(m)][round(w-dt,3)]))
-                    l.append(R-(1/𝜏)*((getA(j,t-𝜏, α = 0.1, sigma = 0.15)*math.exp(-1*BondPrice(j, t-𝜏, α=0.1)*r['trajectoire_'+str(m)][round(w-dt,3)])/getA(j,t, α = 0.1, sigma = 0.15)*math.exp(-1*BondPrice(j, t, α=0.1)*r['trajectoire_'+str(m)][round(w-dt,3)]))-1))
-            p_[j]=p
-            l_[j]=l
+                    p.append(getA(j, t, α=0.1, sigma=0.15) * math.exp(
+                        -1 * BondPrice(j, t, α=0.1) * r['trajectoire_' + str(m)][round(w - dt, 3)]))
+                    l.append(R - (1 / 𝜏) * ((getA(j, t - 𝜏, α=0.1, sigma=0.15) * math.exp(
+                        -1 * BondPrice(j, t - 𝜏, α=0.1) * r['trajectoire_' + str(m)][round(w - dt, 3)]) / getA(j, t,
+                                                                                                               α=0.1,
+                                                                                                               sigma=0.15) * math.exp(
+                        -1 * BondPrice(j, t, α=0.1) * r['trajectoire_' + str(m)][round(w - dt, 3)])) - 1))
+            p_[j] = p
+            l_[j] = l
         P.append(p_)
         L.append(l_)
-        m += 1
+
     K = P
     P = pd.DataFrame(P)
     L = pd.DataFrame(L)
@@ -86,18 +113,19 @@ def simulationP(n_traject,n_obser, T, R, t, 𝜏):
 def simulationVrec(n_traject,n_obser, N, T, r=0.03,𝜏= 0.5):
     dt = float(custom_round(custom_round(custom_round(T / n_obser),3)))
     Vrec = {}
-    L, P, K = simulationP(n_traject, n_obser, T, r, 1, 𝜏)
+    L, P, K = simulationP(n_traject, n_obser, T, r, 1, 𝜏,0)
     for m in range(n_traject):
         V = {}
         for t_obs in K[0].keys():
+            print('pas:',t_obs)
             d=0
             for i in  [0.0]+[k+𝜏 for k in range(T)]+[float(T)]:
                 #print('i',i)
-                L,P,_ = simulationP(n_traject,n_obser, T,r, i, 𝜏)
+                L,P,_ = simulationP(n_traject,n_obser, T,r, i, 𝜏,m)
 
-                if L.iloc[m][t_obs]!=[] and P.iloc[m][t_obs]!=[]:
-                    g = P.iloc[m][t_obs]
-                    h = L.iloc[m][t_obs]
+                if L.iloc[0][t_obs]!=[] and P.iloc[0][t_obs]!=[]:
+                    g = P.iloc[0][t_obs]
+                    h = L.iloc[0][t_obs]
                     d+=N*(h[0]*g[0])
             V[t_obs]=d
         #print('mVrec',m)
