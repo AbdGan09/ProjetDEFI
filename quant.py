@@ -55,8 +55,8 @@ def BondPrice(t, T, α = 0.1):
 # fonction P(t,T): The Zero Coupon price
 # T: maturité
 # t: pour le temps actuel
-def zeroCoupon(t, T):
-    return A(t, T) * np.exp(-BondPrice(t, T) * hullWhite(t))
+def zeroCoupon(t, T, rate):
+    return getA(t, T) * np.exp(-BondPrice(t, T) * rate)
 
 
 # Modele de Hull White
