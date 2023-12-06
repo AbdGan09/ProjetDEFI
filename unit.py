@@ -62,10 +62,41 @@ class Main:
         print(courbe)
         plt.plot(x,courbe)
         plt.show()
+    @staticmethod
+    def TestSimUnitP(t=30, T=30):
+        rate = 0.09
+        print(simUnitP(t, rate, T))
+        return simUnitP(t, rate, T)
+
+
+    @staticmethod
+    def TestSimPV2(n_traject = 4, n_obser=300, T = 3):
+        simulationPV = simulationPV2(n_traject, n_obser, T)
+        simulationPV.reset_index(inplace=True)
+        data_to_plot = simulationPV[simulationPV.trajectoire == "trajectoire_0"]
+        data_to_plot = data_to_plot[data_to_plot.temps == 0.27]
+        data_to_plot = data_to_plot.T
+        data_to_plot = data_to_plot.loc["init":]
+        data_to_plot.plot()
+        plt.show()
+        return simulationPV
+
+    def TestSimVec2(n_traject=10, n_obser=30000, T=30):
+        SimulationVrect = simulationVrecV2(n_traject, n_obser, T, N=1000, K=0.03)
+        data = pd.DataFrame(SimulationVrect)
+        data.T.plot(figsize=(10, 10))
+        mean = data.mean(axis=0)
+        #mean.T.plot(figsize=(10, 10))
+        plt.show()
+        print(data)
+        return data
 
 #Main.courbe_fwdinst(10)
 #Main.test_Hull_White()
 #Main.testTrajectoire()
 #Main.testSimulationTaux()
 #Main.testSimulationP()
-Main.testSimulationVrec()
+#Main.testSimulationVrec()
+#dat = Main.TestSimUnitP(0.001)
+#data = Main.TestSimPV2()
+Main.TestSimVec2()

@@ -47,6 +47,20 @@ def gettheta(t, α = 0.1, sigma = 0.15):
     return ((α*fM)+dfM+(((sigma**2)/2*α)*(1-np.exp(-2*α*t))))
 
 
+def getL(P_liste, 𝜏 = 0.5):
+    P_liste_series = pd.Series(np.array(P_liste))
+    P_liste_change_series = P_liste_series.pct_change()
+    L = (1/𝜏)*P_liste_change_series
+    L = L[~np.isnan(L)]
+    return L
+
+#typo à corrigé
+def getVrec(K, L_liste,P_t_obs, T,N=1, 𝜏 = 0.5):
+    P_t_obs = P_t_obs[~np.isnan(P_t_obs)]
+    Vrec = np.sum(𝜏*((K-L_liste)*P_t_obs[1:]))
+    return Vrec
+
+
 # fonction B(t, T)
 def BondPrice(t, T, α = 0.1):
     return ((1 - np.exp(-α * (T - t))) / α)
@@ -55,8 +69,8 @@ def BondPrice(t, T, α = 0.1):
 # fonction P(t,T): The Zero Coupon price
 # T: maturité
 # t: pour le temps actuel
-def zeroCoupon(t, T):
-    return A(t, T) * np.exp(-BondPrice(t, T) * hullWhite(t))
+def zeroCoupon(t, T, rate):
+    return getA(t, T) * np.exp(-BondPrice(t, T) * rate)
 
 
 # Modele de Hull White

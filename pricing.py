@@ -2,14 +2,10 @@
 #importation library
 import numpy as np
 import math
-
+from decimal import localcontext, Decimal, ROUND_HALF_UP
 from quant import *
 
 #fonction qui prend en param le notionnel N, la date de valo, le taux fixe du swap
-def pricingSwap():
-    pass
-
-
 #simulation de trajectoire
 def generateurTrajectoire(n_traject, n_obser,T, 𝜏= 0.5):
     dt = T / n_obser
@@ -33,7 +29,40 @@ def simulationProcessusTaux(n_traject, n_obser, T=1,isForSimulation = True):
     rate_process.index = ["trajectoire_" + str(i) for i in range(0, n_traject)]
     return rate_process
 
-from decimal import localcontext, Decimal, ROUND_HALF_UP
+
+def simUnitP(t, rate, T, 𝜏 = 0.5, Nb_payement = 60):
+    P = []
+    𝜏 = T/Nb_payement
+    for i in range(1, Nb_payement+2):
+        if t > i * 𝜏:
+            P.append(None)
+        else:
+            P.append(zeroCoupon(t, i * 𝜏, rate))
+    return P
+
+#le init sera a suprimé après vue qu'il a dis de considéré le payement 1 directement et de  ne pas vraiment marqué le temps de strike.
+#je me suis rendu compte qu'il y'a un petit tipo au niveau d'une multiplication donc la cloche est un peu décalé.
+def simulationPV2(n_traject, n_obser, T, Nb_payement = 60):
+    rate_ = list(simulationProcessusTaux(n_traject, n_obser, T).values)
+    PV_sim = list(np.empty((n_traject, n_obser), dtype=object))
+    dt = T/n_obser
+    for index, traject_number in enumerate(rate_):
+        for i, rate in enumerate(traject_number):
+            PV_sim[index][i] = simUnitP(i*dt, rate, T)
+    PV_sim = np.concatenate(PV_sim, axis = 0)
+    Data = []
+    for liste in PV_sim:
+        Data.append(liste[:])
+    Index1_trajectoir_liste = [["trajectoire_" + str(i)] * n_obser for i in range(n_traject)]
+    Index1_trajectoir = [element for liste in Index1_trajectoir_liste for element in liste]
+    Colonne = ["init"]+[("Payement_" + str(i)) for i in range(1, Nb_payement+1)]
+    PV_sim_data_frame = pd.DataFrame(Data, columns=Colonne)
+    PV_sim_data_frame["trajectoire"] = Index1_trajectoir
+    PV_sim_data_frame["temps"] = [round(i*dt, 3) for i in range(n_obser)]*n_traject
+    PV_sim_data_frame = PV_sim_data_frame.set_index(["trajectoire", "temps"])
+    #PV_sim_data_frame.to_csv("check4.csv")
+    return PV_sim_data_frame
+
 # Définir le contexte décimal avec l'arrondi vers le haut (ROUND_HALF_UP)
 #localcontext().rounding = ROUND_HALF_UP
 def custom_round(value, decimals=3):
@@ -133,3 +162,25 @@ def simulationVrec(n_traject,n_obser, N, T, r=0.03,𝜏= 0.5):
     Vrec = pd.DataFrame(Vrec).T
     return(Vrec)
 
+def simUnitVrect(P_trajectoire,T, n_obser, dt, K=0.03, N = 1):
+    Vrec = []
+    for i in range(1,n_obser-1):
+        P_t_obs = P_trajectoire[P_trajectoire.temps == round(i*dt,3)]
+        P_t_obs = P_t_obs[P_t_obs.columns[3:]]
+        if len(P_t_obs) != 0:
+            P_t_obs = P_t_obs.values[0]
+            L_list = getL(P_t_obs, 𝜏 = 0.5)
+            V_rec_th_time = getVrec(K, L_list,P_t_obs, i*dt, T)
+            Vrec.append(V_rec_th_time)
+        else:
+            Vrec.append("no")
+    return Vrec
+def simulationVrecV2(n_traject, n_obser, T, N, K = 0.03):
+    P = simulationPV2(n_traject, n_obser, T)
+    P.reset_index(inplace=True)
+    Sim_Vrec = []
+    dt = T/n_obser
+    for trajectoire in P.trajectoire.unique():
+        P_trajectoire = P[P.trajectoire == trajectoire]
+        Sim_Vrec.append(simUnitVrect(P_trajectoire,T, n_obser,dt, K))
+    return Sim_Vrec
