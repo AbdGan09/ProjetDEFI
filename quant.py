@@ -56,8 +56,9 @@ def getL(P_liste, 𝜏 = 0.5):
 
 #typo à corrigé
 def getVrec(K, L_liste,P_t_obs, T,N=1, 𝜏 = 0.5):
-    P_t_obs = P_t_obs[~np.isnan(P_t_obs)]
-    Vrec = np.sum(𝜏*((K-L_liste)*P_t_obs[1:]))
+    print(L_liste.shape)
+    print(P_t_obs.shape)
+    Vrec = np.sum(𝜏*((K-L_liste)*P_t_obs.shape)[2:])
     return Vrec
 
 
