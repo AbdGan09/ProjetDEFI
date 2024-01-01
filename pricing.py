@@ -46,31 +46,21 @@ def custom_round(value, decimals=3):
 def simulationP(n_traject, n_obser, T, R, t, 𝜏, m=None):
     r = simulationProcessusTaux(n_traject, n_obser, T)
     r = r.to_dict('index')
-    print(r)
     iterations = np.round(np.arange(0, T + T / n_obser, T / n_obser), 3)
-
     P = []
     L = []
 
     if m is None:
         for m in range(n_traject):
-            print('m_', m)
             p_ = {}
             l_ = {}
-            print(iterations)
             j0 = iterations[0]
             for j in iterations[1:len(iterations) - 1]:
                 t = float(t)
-                i = np.where(iterations >= t)[0][0]
-                print('j', j)
-                print('j0', j0)
 
                 p = zeroCoupon(j, T, r['trajectoire_' + str(m)][j])
-                # print('p=',p)
-                # print("Index:", round(j-round(j-j0,1),1))
-                # print('r=',r['trajectoire_' + str(m)][round(j-round(j-j0,1),1)])
                 l = R - (1 / 𝜏) * ((zeroCoupon(j, T, r['trajectoire_' + str(m)][j]) / zeroCoupon(j, T, r['trajectoire_' + str(m)][round(j - round(j - j0, 1), 1)])) - 1)
-                # print('l',l)
+
                 j0 = j
                 p_[j] = p.tolist()
                 l_[j] = l.tolist()
@@ -81,21 +71,15 @@ def simulationP(n_traject, n_obser, T, R, t, 𝜏, m=None):
     else:
         p_ = {}
         l_ = {}
-        print(iterations)
+
         j0=iterations[0]
         for j in iterations[1:len(iterations)-1]:
             t = float(t)
-            i = np.where(iterations >= t)[0][0]
-            print('j',j)
-            print('j0',j0)
 
             p = zeroCoupon(j, T, r['trajectoire_'+str(m)][j])
-            #print('p=',p)
-            #print("Index:", round(j-round(j-j0,1),1))
-            #print('r=',r['trajectoire_' + str(m)][round(j-round(j-j0,1),1)])
             l = R - (1 / 𝜏) * ((zeroCoupon(j, T, r['trajectoire_'+str(m)][j]) /zeroCoupon(j, T, r['trajectoire_' + str(m)][round(j-round(j-j0,1),1)])) - 1)
-            #print('l',l)
-            j0=j
+
+            j0 =j
             p_[j] = p.tolist()
             l_[j] = l.tolist()
 
@@ -119,15 +103,13 @@ def simulationVrec(n_traject, n_obser, N, T, r=0.03, 𝜏=0.5):
     for m in range(n_traject):
         V = {}
         for t_obs in K[0].keys():
-            print('pas:', t_obs)
             d = 0
-            for i in np.concatenate(([0.0], np.arange(𝜏, T, 𝜏), [float(T)])):
-                L, P, _ = simulationP(n_traject, n_obser, T, r, i, 𝜏, m)
-                #if not L.iloc[0][t_obs] and not P.iloc[0][t_obs]:
-                g = P.iloc[0][t_obs]
-                h = L.iloc[0][t_obs]
-                d += N * (h * g)
-
+            for i in np.concatenate(([0.0], np.arange(𝜏, T, 𝜏))):
+                if t_obs<= i:
+                    L, P, _ = simulationP(n_traject, n_obser, T, r, i, 𝜏, m)
+                    g = P.iloc[0][t_obs]
+                    h = L.iloc[0][t_obs]
+                    d += N * (h * g)
             V[t_obs] = d
 
         Vrec[m] = V
