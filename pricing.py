@@ -43,48 +43,33 @@ def custom_round(value, decimals=3):
 # à t=0, le modèle ne marche pas à cause de la fonction de Siegel
 # t une date de paiement antérieure à T la maturité
 
-def simulationP(n_traject, n_obser, T, R, t, 𝜏, m=None):
+def simulationP(n_traject, n_obser, T, R, t, 𝜏, m=0):
     r = simulationProcessusTaux(n_traject, n_obser, T)
     r = r.to_dict('index')
     iterations = np.round(np.arange(0, T + T / n_obser, T / n_obser), 3)
     P = []
     L = []
 
-    if m is None:
-        for m in range(n_traject):
-            p_ = {}
-            l_ = {}
-            j0 = iterations[0]
-            for j in iterations[1:len(iterations) - 1]:
-                t = float(t)
+    p_ = {}
+    l_ = {}
 
-                p = zeroCoupon(j, T, r['trajectoire_' + str(m)][j])
-                l = R - (1 / 𝜏) * ((zeroCoupon(j, T, r['trajectoire_' + str(m)][j]) / zeroCoupon(j, T, r['trajectoire_' + str(m)][round(j - round(j - j0, 1), 1)])) - 1)
-
-                j0 = j
-                p_[j] = p.tolist()
-                l_[j] = l.tolist()
-
-            P.append(p_)
-            L.append(l_)
-
-    else:
-        p_ = {}
-        l_ = {}
-
-        j0=iterations[0]
-        for j in iterations[1:len(iterations)-1]:
+    j0=iterations[0]
+    for j in iterations[1:len(iterations)-1]:
+        if t<= j:
             t = float(t)
 
-            p = zeroCoupon(j, T, r['trajectoire_'+str(m)][j])
-            l = R - (1 / 𝜏) * ((zeroCoupon(j, T, r['trajectoire_'+str(m)][j]) /zeroCoupon(j, T, r['trajectoire_' + str(m)][round(j-round(j-j0,1),1)])) - 1)
+            p = zeroCoupon(t, j, r['trajectoire_'+str(m)][j])
+            l = R - (1 / 𝜏) * ((zeroCoupon(t, j, r['trajectoire_'+str(m)][j]) /zeroCoupon(t, j, r['trajectoire_' + str(m)][round(j-round(j-j0,1),1)])) - 1)
 
             j0 =j
             p_[j] = p.tolist()
             l_[j] = l.tolist()
+        else:
+            p_[j] = 0.0
+            l_[j] = 0.0
 
-        P.append(p_)
-        L.append(l_)
+    P.append(p_)
+    L.append(l_)
 
     K = P
     P = pd.DataFrame(P)
@@ -104,13 +89,11 @@ def simulationVrec(n_traject, n_obser, N, T, r=0.03, 𝜏=0.5):
         V = {}
         for t_obs in K[0].keys():
             d = 0
-            for i in np.concatenate(([0.0], np.arange(𝜏, T, 𝜏))):
-                if t_obs<= i:
-                    L, P, _ = simulationP(n_traject, n_obser, T, r, i, 𝜏, m)
-                    g = P.iloc[0][t_obs]
-                    h = L.iloc[0][t_obs]
-                    d += N * (h * g)
-            V[t_obs] = d
+            L, P, _ = simulationP(n_traject, n_obser, T, r, t_obs, 𝜏, m)
+            g = np.array(P.iloc[0]).T
+            h = np.array(L.iloc[0])
+            d = np.dot(h,g)
+            V[t_obs] = d * N
 
         Vrec[m] = V
     Vrec = pd.DataFrame(Vrec).T
