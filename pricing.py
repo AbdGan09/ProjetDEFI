@@ -74,6 +74,7 @@ def simulationP(n_traject, n_obser, T, r,R, t, 𝜏, m=0, simulation=False):
 #Simulation du Vrec
 #N: notional
 #K: les différents t observé selon le nombre d'observations choisi
+# v_t: la somme du produit du prix actualisé par le taux actualisé
 def simulationVrec(n_traject, n_obser, N, T, R=0.03, 𝜏=0.5):
     r = simulationProcessusTaux(n_traject, n_obser, T)
     r = r.to_dict('index')
@@ -83,12 +84,12 @@ def simulationVrec(n_traject, n_obser, N, T, R=0.03, 𝜏=0.5):
     for m in range(n_traject):
         V = {}
         for t_obs in K:
-            d = 0
+            v_t = 0
             L, P= simulationP(n_traject, n_obser, T,r, R, t_obs, 𝜏, m)
-            g = np.array(P.iloc[0]).T
-            h = np.array(L.iloc[0])
-            d = np.dot(h,g)
-            V[t_obs] = d * N
+            prix_actual = np.array(P.iloc[0]).T
+            L_actual = np.array(L.iloc[0])
+            v_t = np.dot(L_actual,prix_actual)
+            V[t_obs] = v_t * N
 
         Vrec[m] = V
     Vrec = pd.DataFrame(Vrec).T
