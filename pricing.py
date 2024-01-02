@@ -5,11 +5,6 @@ import math
 
 from quant import *
 
-#fonction qui prend en param le notionnel N, la date de valo, le taux fixe du swap
-def pricingSwap():
-    pass
-
-
 #simulation de trajectoire
 def generateurTrajectoire(n_traject, n_obser,T, 𝜏= 0.5):
     dt = T / n_obser
@@ -33,16 +28,14 @@ def simulationProcessusTaux(n_traject, n_obser, T=1,isForSimulation = True):
     rate_process.index = ["trajectoire_" + str(i) for i in range(0, n_traject)]
     return rate_process
 
-from decimal import localcontext, Decimal, ROUND_HALF_UP
-# Définir le contexte décimal avec l'arrondi vers le haut (ROUND_HALF_UP)
-#localcontext().rounding = ROUND_HALF_UP
-def custom_round(value, decimals=3):
-    return Decimal(str(value)).quantize(Decimal('1e-{0}'.format(decimals)),rounding = ROUND_HALF_UP)
 
 #Simulation du discount
 # à t=0, le modèle ne marche pas à cause de la fonction de Siegel
-# t une date de paiement antérieure à T la maturité
-
+# P le prix actualisé par rapport au t_obs où on se positionne
+# L le taux actualisé
+# r la courbe des taux (si simulation=False elle est passé en paramètre)
+# R le taux fixe
+# m la trajectoire numéro m
 def simulationP(n_traject, n_obser, T, r,R, t, 𝜏, m=0, simulation=False):
     if simulation:
         r = simulationProcessusTaux(n_traject, n_obser, T)
@@ -73,8 +66,6 @@ def simulationP(n_traject, n_obser, T, r,R, t, 𝜏, m=0, simulation=False):
         P.append(p_)
         L.append(l_)
 
-
-
     P = pd.DataFrame(P)
     L = pd.DataFrame(L)
 
@@ -82,6 +73,7 @@ def simulationP(n_traject, n_obser, T, r,R, t, 𝜏, m=0, simulation=False):
 
 #Simulation du Vrec
 #N: notional
+#K: les différents t observé selon le nombre d'observations choisi
 def simulationVrec(n_traject, n_obser, N, T, R=0.03, 𝜏=0.5):
     r = simulationProcessusTaux(n_traject, n_obser, T)
     r = r.to_dict('index')
