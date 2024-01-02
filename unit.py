@@ -35,11 +35,8 @@ class Main:
         print(simulation_Taux)
         plotSimulation(simulation_Taux.columns, list(simulation_Taux.T.values))
 
-    def testSimulationP(n_traject=1, n_obser=100, T=10,R=0.03, t=4.5, 𝜏=0.5):
-        #n_obser = T * n_obser
-        L,simulation_P,_ = simulationP(n_traject,n_obser, T,R, t, 𝜏)
-        #simulation_P.to_clipboard()
-        #L.to_clipboard()
+    def testSimulationP(n_traject=1, n_obser=100, T=10,R=0.03, t=4.5, 𝜏=0.5, r=None,isPsimulation=True):
+        L,simulation_P = simulationP(n_traject,n_obser, T,R, t, 𝜏, r=None,isPsimulation=True)
         print(simulation_P)
         print(L)
         #simulation_P = pd.DataFrame(simulation_P)

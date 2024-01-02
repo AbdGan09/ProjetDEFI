@@ -36,7 +36,7 @@ def simulationProcessusTaux(n_traject, n_obser, T=1,isForSimulation = True):
 # r la courbe des taux (si simulation=False elle est passé en paramètre)
 # R le taux fixe
 # i_traj correspond au numéro de la trajectoire voulu
-def simulationP(n_traject, n_obser, T, r,R, t, 𝜏, i_traj=0, isPsimulation=False):
+def simulationP(n_traject, n_obser, T,R, t, 𝜏, i_traj=0,r=None, isPsimulation=False):
     if isPsimulation:
         r = simulationProcessusTaux(n_traject, n_obser, T)
         r = r.to_dict('index')
@@ -86,7 +86,7 @@ def simulationVrec(n_traject, n_obser, N, T, R=0.03, 𝜏=0.5):
         V = {}
         for t_obs in K:
             v_t = 0
-            L, P= simulationP(n_traject, n_obser, T,r, R, t_obs, 𝜏, i_traj)
+            L, P= simulationP(n_traject, n_obser, T, R, t_obs, 𝜏, i_traj,r)
             prix_actual = np.array(P.iloc[0]).T
             L_actual = np.array(L.iloc[0])
             v_t = np.dot(L_actual,prix_actual)
