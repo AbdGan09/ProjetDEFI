@@ -43,55 +43,56 @@ def custom_round(value, decimals=3):
 # à t=0, le modèle ne marche pas à cause de la fonction de Siegel
 # t une date de paiement antérieure à T la maturité
 
-def simulationP(n_traject, n_obser, T, R, t, 𝜏, m=0):
-    r = simulationProcessusTaux(n_traject, n_obser, T)
-    r = r.to_dict('index')
+def simulationP(n_traject, n_obser, T, r,R, t, 𝜏, m=0, simulation=False):
+    if simulation:
+        r = simulationProcessusTaux(n_traject, n_obser, T)
+        r = r.to_dict('index')
+    else:
+        iterations = np.round(np.arange(0, (T / 𝜏)+1, 𝜏), 3)
+        P = []
+        L = []
 
-    iterations = np.round(np.arange(0, (T / 𝜏)+1, 𝜏), 3)
-    P = []
-    L = []
+        p_ = {}
+        l_ = {}
 
-    p_ = {}
-    l_ = {}
+        j0=iterations[0]
+        for j in iterations[1:len(iterations)-1]:
+            if t<= j:
+                t = float(t)
 
-    j0=iterations[0]
-    for j in iterations[1:len(iterations)-1]:
-        if t<= j:
-            t = float(t)
+                p = zeroCoupon(t, j, r['trajectoire_'+str(m)][t])
+                l = R - (1 / 𝜏) * ((zeroCoupon(t, j, r['trajectoire_'+str(m)][t]) /zeroCoupon(t, j, r['trajectoire_' + str(m)][round(t-round(t-j0,1),1)])) - 1)
 
-            p = zeroCoupon(t, j, r['trajectoire_'+str(m)][t])
-            l = R - (1 / 𝜏) * ((zeroCoupon(t, j, r['trajectoire_'+str(m)][t]) /zeroCoupon(t, j, r['trajectoire_' + str(m)][round(t-round(t-j0,1),1)])) - 1)
+                j0 =t
+                p_[j] = p.tolist()
+                l_[j] = l.tolist()
+            else:
+                p_[j] = 0.0
+                l_[j] = 0.0
 
-            j0 =t
-            p_[j] = p.tolist()
-            l_[j] = l.tolist()
-        else:
-            p_[j] = 0.0
-            l_[j] = 0.0
+        P.append(p_)
+        L.append(l_)
 
-    P.append(p_)
-    L.append(l_)
 
-    K = r['trajectoire_0'].keys()
 
     P = pd.DataFrame(P)
     L = pd.DataFrame(L)
 
-    return L, P, K
+    return L, P
 
 #Simulation du Vrec
 #N: notional
-def simulationVrec(n_traject, n_obser, N, T, r=0.03, 𝜏=0.5):
-
+def simulationVrec(n_traject, n_obser, N, T, R=0.03, 𝜏=0.5):
+    r = simulationProcessusTaux(n_traject, n_obser, T)
+    r = r.to_dict('index')
     Vrec = {}
-
-    L, P, K = simulationP(n_traject, n_obser, T, r, 1, 𝜏, 0)
+    K = r['trajectoire_0'].keys()
 
     for m in range(n_traject):
         V = {}
         for t_obs in K:
             d = 0
-            L, P, _ = simulationP(n_traject, n_obser, T, r, t_obs, 𝜏, m)
+            L, P= simulationP(n_traject, n_obser, T,r, R, t_obs, 𝜏, m)
             g = np.array(P.iloc[0]).T
             h = np.array(L.iloc[0])
             d = np.dot(h,g)
