@@ -46,7 +46,8 @@ def custom_round(value, decimals=3):
 def simulationP(n_traject, n_obser, T, R, t, 𝜏, m=0):
     r = simulationProcessusTaux(n_traject, n_obser, T)
     r = r.to_dict('index')
-    iterations = np.round(np.arange(0, T + T / n_obser, T / n_obser), 3)
+
+    iterations = np.round(np.arange(0, (T / 𝜏)+1, 𝜏), 3)
     P = []
     L = []
 
@@ -58,10 +59,10 @@ def simulationP(n_traject, n_obser, T, R, t, 𝜏, m=0):
         if t<= j:
             t = float(t)
 
-            p = zeroCoupon(t, j, r['trajectoire_'+str(m)][j])
-            l = R - (1 / 𝜏) * ((zeroCoupon(t, j, r['trajectoire_'+str(m)][j]) /zeroCoupon(t, j, r['trajectoire_' + str(m)][round(j-round(j-j0,1),1)])) - 1)
+            p = zeroCoupon(t, j, r['trajectoire_'+str(m)][t])
+            l = R - (1 / 𝜏) * ((zeroCoupon(t, j, r['trajectoire_'+str(m)][t]) /zeroCoupon(t, j, r['trajectoire_' + str(m)][round(t-round(t-j0,1),1)])) - 1)
 
-            j0 =j
+            j0 =t
             p_[j] = p.tolist()
             l_[j] = l.tolist()
         else:
@@ -71,7 +72,8 @@ def simulationP(n_traject, n_obser, T, R, t, 𝜏, m=0):
     P.append(p_)
     L.append(l_)
 
-    K = P
+    K = r['trajectoire_0'].keys()
+
     P = pd.DataFrame(P)
     L = pd.DataFrame(L)
 
@@ -80,14 +82,14 @@ def simulationP(n_traject, n_obser, T, R, t, 𝜏, m=0):
 #Simulation du Vrec
 #N: notional
 def simulationVrec(n_traject, n_obser, N, T, r=0.03, 𝜏=0.5):
-    iterations = np.round(np.arange(0, T + T / n_obser, T / n_obser), 3)
+
     Vrec = {}
 
     L, P, K = simulationP(n_traject, n_obser, T, r, 1, 𝜏, 0)
 
     for m in range(n_traject):
         V = {}
-        for t_obs in K[0].keys():
+        for t_obs in K:
             d = 0
             L, P, _ = simulationP(n_traject, n_obser, T, r, t_obs, 𝜏, m)
             g = np.array(P.iloc[0]).T
