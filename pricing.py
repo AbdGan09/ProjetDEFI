@@ -41,15 +41,15 @@ def simulationP(n_traject, n_obser, T, r,R, t, 𝜏, m=0, simulation=False):
         r = simulationProcessusTaux(n_traject, n_obser, T)
         r = r.to_dict('index')
     else:
-        iterations = np.round(np.arange(0, (T / 𝜏)+1, 𝜏), 3)
+        dates_paiement = np.round(np.arange(0, (T / 𝜏)+1, 𝜏), 3)
         P = []
         L = []
 
         p_ = {}
         l_ = {}
 
-        j0=iterations[0]
-        for j in iterations[1:len(iterations)-1]:
+        j0=dates_paiement[0]
+        for j in dates_paiement[1:len(dates_paiement)-1]:
             if t<= j:
                 t = float(t)
 
@@ -74,7 +74,8 @@ def simulationP(n_traject, n_obser, T, r,R, t, 𝜏, m=0, simulation=False):
 #Simulation du Vrec
 #N: notional
 #K: les différents t observé selon le nombre d'observations choisi
-# v_t: la somme du produit du prix actualisé par le taux actualisé
+#m: la trajectoire numéro m
+#v_t: la somme du produit du prix actualisé par le taux actualisé
 def simulationVrec(n_traject, n_obser, N, T, R=0.03, 𝜏=0.5):
     r = simulationProcessusTaux(n_traject, n_obser, T)
     r = r.to_dict('index')
