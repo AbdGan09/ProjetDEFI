@@ -35,9 +35,9 @@ def simulationProcessusTaux(n_traject, n_obser, T=1,isForSimulation = True):
 # L le taux actualisé
 # r la courbe des taux (si simulation=False elle est passé en paramètre)
 # R le taux fixe
-# m la trajectoire numéro m
-def simulationP(n_traject, n_obser, T, r,R, t, 𝜏, m=0, simulation=False):
-    if simulation:
+# i_traj correspond au numéro de la trajectoire voulu
+def simulationP(n_traject, n_obser, T, r,R, t, 𝜏, i_traj=0, isPsimulation=False):
+    if isPsimulation:
         r = simulationProcessusTaux(n_traject, n_obser, T)
         r = r.to_dict('index')
     else:
@@ -53,12 +53,12 @@ def simulationP(n_traject, n_obser, T, r,R, t, 𝜏, m=0, simulation=False):
             if t<= j:
                 t = float(t)
 
-                p = zeroCoupon(t, j, r['trajectoire_'+str(m)][t])
-                l = R - (1 / 𝜏) * ((zeroCoupon(t, j, r['trajectoire_'+str(m)][t]) /zeroCoupon(t, j, r['trajectoire_' + str(m)][round(t-round(t-j0,1),1)])) - 1)
+                p = zeroCoupon(t, j, r['trajectoire_'+str(i_traj)][t])
+                l = R - (1 / 𝜏) * ((zeroCoupon(t, j, r['trajectoire_'+str(i_traj)][t]) /zeroCoupon(t, j, r['trajectoire_' + str(i_traj)][round(t-round(t-j0,1),1)])) - 1)
 
                 j0 =t
-                p_[j] = p.tolist()
-                l_[j] = l.tolist()
+                p_[j] = p
+                l_[j] = l
             else:
                 p_[j] = 0.0
                 l_[j] = 0.0
@@ -74,7 +74,7 @@ def simulationP(n_traject, n_obser, T, r,R, t, 𝜏, m=0, simulation=False):
 #Simulation du Vrec
 #N: notional
 #K: les différents t observé selon le nombre d'observations choisi
-#m: la trajectoire numéro m
+#i_traj: correcpond au numéro de la trajectoire voulu
 #v_t: la somme du produit du prix actualisé par le taux actualisé
 def simulationVrec(n_traject, n_obser, N, T, R=0.03, 𝜏=0.5):
     r = simulationProcessusTaux(n_traject, n_obser, T)
@@ -82,17 +82,17 @@ def simulationVrec(n_traject, n_obser, N, T, R=0.03, 𝜏=0.5):
     Vrec = {}
     K = r['trajectoire_0'].keys()
 
-    for m in range(n_traject):
+    for i_traj in range(n_traject):
         V = {}
         for t_obs in K:
             v_t = 0
-            L, P= simulationP(n_traject, n_obser, T,r, R, t_obs, 𝜏, m)
+            L, P= simulationP(n_traject, n_obser, T,r, R, t_obs, 𝜏, i_traj)
             prix_actual = np.array(P.iloc[0]).T
             L_actual = np.array(L.iloc[0])
             v_t = np.dot(L_actual,prix_actual)
             V[t_obs] = v_t * N
 
-        Vrec[m] = V
+        Vrec[i_traj] = V
     Vrec = pd.DataFrame(Vrec).T
     return Vrec
 
