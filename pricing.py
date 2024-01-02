@@ -1,7 +1,4 @@
 #developpement de tout ce qui est en lien avec la partie pricing
-#importation library
-import numpy as np
-import math
 
 from quant import *
 
@@ -85,7 +82,6 @@ def simulationVrec(n_traject, n_obser, N, T, R=0.03, 𝜏=0.5):
     for i_traj in range(n_traject):
         V = {}
         for t_obs in K:
-            v_t = 0
             L, P= simulationP(n_traject, n_obser, T, R, t_obs, 𝜏, i_traj,r)
             prix_actual = np.array(P.iloc[0]).T
             L_actual = np.array(L.iloc[0])
