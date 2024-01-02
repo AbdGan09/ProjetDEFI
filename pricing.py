@@ -41,22 +41,22 @@ def simulationP(n_traject, n_obser, T,R, t, 𝜏, i_traj=0,r=None, isPsimulation
         r = simulationProcessusTaux(n_traject, n_obser, T)
         r = r.to_dict('index')
 
-    dates_paiement = np.round(np.arange(0, (T / 𝜏)+1, 𝜏), 3)
+    dates_paiement = np.round(np.arange(0, (T / 𝜏)+1, 𝜏), 4)
     P = []
     L = []
 
     p_ = {}
     l_ = {}
 
-    j0=dates_paiement[0]
+    j0=0
     for j in dates_paiement[1:len(dates_paiement)-1]:
         if t<= j:
             t = float(t)
 
             p = zeroCoupon(t, j, r['trajectoire_'+str(i_traj)][t])
-            l = R - (1 / 𝜏) * ((zeroCoupon(t, j, r['trajectoire_'+str(i_traj)][t]) /zeroCoupon(t, j, r['trajectoire_' + str(i_traj)][round(t-round(t-j0,1),1)])) - 1)
+            l = R - (1 / 𝜏) * ((zeroCoupon(t, j-j0, r['trajectoire_'+str(i_traj)][t]) /zeroCoupon(t, j, r['trajectoire_' + str(i_traj)][t])) - 1)
 
-            j0 =t
+            j0 =j
             p_[j] = p
             l_[j] = l
         else:
