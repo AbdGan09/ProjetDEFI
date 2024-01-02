@@ -44,7 +44,7 @@ class Main:
         print(L)
         #simulation_P = pd.DataFrame(simulation_P)
         #plotSimulation(simulation_P.columns, list(simulation_P.T.values))
-    def testSimulationVrec(n_traject=4,n_obser=300, N=100, T=30, R=0.03,𝜏= 0.5):
+    def testSimulationVrec(n_traject=6,n_obser=300, N=100, T=30, R=0.03,𝜏= 0.5):
         simulation_Vrec = simulationVrec(n_traject,n_obser, N, T, R=0.03,𝜏= 0.5)
         print(simulation_Vrec.mean(axis=0))
         print(simulation_Vrec)
