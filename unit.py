@@ -1,6 +1,4 @@
 #lieu pour mettre les class ou fonction de test:
-import numpy as np
-
 from pricing import *
 from quant import *
 
