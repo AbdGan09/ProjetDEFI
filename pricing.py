@@ -40,31 +40,31 @@ def simulationP(n_traject, n_obser, T, r,R, t, 𝜏, i_traj=0, isPsimulation=Fal
     if isPsimulation:
         r = simulationProcessusTaux(n_traject, n_obser, T)
         r = r.to_dict('index')
-    else:
-        dates_paiement = np.round(np.arange(0, (T / 𝜏)+1, 𝜏), 3)
-        P = []
-        L = []
 
-        p_ = {}
-        l_ = {}
+    dates_paiement = np.round(np.arange(0, (T / 𝜏)+1, 𝜏), 3)
+    P = []
+    L = []
 
-        j0=dates_paiement[0]
-        for j in dates_paiement[1:len(dates_paiement)-1]:
-            if t<= j:
-                t = float(t)
+    p_ = {}
+    l_ = {}
 
-                p = zeroCoupon(t, j, r['trajectoire_'+str(i_traj)][t])
-                l = R - (1 / 𝜏) * ((zeroCoupon(t, j, r['trajectoire_'+str(i_traj)][t]) /zeroCoupon(t, j, r['trajectoire_' + str(i_traj)][round(t-round(t-j0,1),1)])) - 1)
+    j0=dates_paiement[0]
+    for j in dates_paiement[1:len(dates_paiement)-1]:
+        if t<= j:
+            t = float(t)
 
-                j0 =t
-                p_[j] = p
-                l_[j] = l
-            else:
-                p_[j] = 0.0
-                l_[j] = 0.0
+            p = zeroCoupon(t, j, r['trajectoire_'+str(i_traj)][t])
+            l = R - (1 / 𝜏) * ((zeroCoupon(t, j, r['trajectoire_'+str(i_traj)][t]) /zeroCoupon(t, j, r['trajectoire_' + str(i_traj)][round(t-round(t-j0,1),1)])) - 1)
 
-        P.append(p_)
-        L.append(l_)
+            j0 =t
+            p_[j] = p
+            l_[j] = l
+        else:
+            p_[j] = 0.0
+            l_[j] = 0.0
+
+    P.append(p_)
+    L.append(l_)
 
     P = pd.DataFrame(P)
     L = pd.DataFrame(L)
