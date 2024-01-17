@@ -58,10 +58,12 @@ class Main:
         print(courbe)
         plt.plot(x,courbe)
         plt.show()
-
+    def testCDS():
+        pricingCDS()
 #Main.courbe_fwdinst(10)
 #Main.test_Hull_White()
 #Main.testTrajectoire()
 #Main.testSimulationTaux()
 #Main.testSimulationP()
-Main.testSimulationVrec()
+#Main.testSimulationVrec()
+Main.testCDS()

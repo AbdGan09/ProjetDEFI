@@ -1,6 +1,9 @@
 #developpement de tout ce qui est en lien avec la partie pricing
 
 from quant import *
+from scipy import integrate
+from scipy.optimize import newton
+from scipy.optimize import fsolve
 
 #simulation de trajectoire
 def generateurTrajectoire(n_traject, n_obser,T, 𝜏= 0.5):
@@ -92,4 +95,62 @@ def simulationVrec(n_traject, n_obser, N, T, R=0.03, 𝜏=0.5):
     Vrec = pd.DataFrame(Vrec).T
     return Vrec
 
+#CDS
+def pricingCDS():
+    # Fonction représentant l'intégrande pour λc
+    def integrand_lambda_c(s, lambda_c):
+        return np.exp(-lambda_c * s)
+
+    # Paramètres
+    RR = 0.4  # Taux de récupération
+    lambda_c_constant = 0.02  # Intensité de défaut constante sur 6 mois
+    T0 = 0  # Temps initial
+    T_final = 6 / 12  # Temps final en années
+    Ti_values = [1 / 12, 3 / 12, 6 / 12]  # Temps final en années pour chaque terme de la somme
+
+    # Calcul de l'intégrale numérique pour λc
+    lambda_c_integral, _ = integrate.quad(integrand_lambda_c, T0, T_final, args=(lambda_c_constant,))
+
+    # Fonction représentant le CDS
+    def CDS(s):
+        return 1  # Remplacez cette fonction par la formule réelle du CDS si disponible
+
+    # Calcul de la somme
+    sum_term = sum([0.25 * (integrate.quad(lambda s: integrand_lambda_c(s, lambda_c_constant), T0, Ti)[0] +integrate.quad(lambda s: integrand_lambda_c(s, lambda_c_constant) * (s - T0 - Ti) / Ti, T0, Ti)[0])for Ti in Ti_values])
+
+    # Calcul final du STCDS
+    def STCDS(lambda_c_constant):
+        return  (1 - RR) * (integrate.quad(lambda s: integrand_lambda_c(s, lambda_c_constant) * np.exp(-integrate.quad(lambda t: integrand_lambda_c(t, lambda_c_constant), T0, s)[0]), T0, T_final)[0] / sum_term)
+
+    S_CDS = STCDS(lambda_c_constant)
+    # Utiliser la méthode de Newton pour trouver numériquement la valeur de lambda_c
+    lambda_c_numeric = newton(lambda lambda_c: STCDS(lambda_c) - 0.5, lambda_c_constant-0.005)
+
+    print(f"La valeur du CDS sur l'intervalle [0, 6 mois] est : {S_CDS}")
+    print(f"La valeur de lambda_c_constant est : {lambda_c_constant}")
+    print(f"La valeur numérique de lambda_c est : {lambda_c_numeric}")
+
+    # Utilisation de fsolve pour trouver numériquement la valeur de lambda_c
+    lambda_c_numeric2 = fsolve(STCDS, x0=0.02)[0]
+
+    print(f"La valeur numérique de lambda_c e utilisant fsolve est : {lambda_c_numeric2}")
+
+    # Implémentation de la méthode de la sécante
+    def secant_method(func, x0, x1, tolerance=1e-6, max_iter=100):
+        for i in range(max_iter):
+            f_x0 = func(x0)
+            f_x1 = func(x1)
+
+            if np.abs(f_x1 - f_x0) < tolerance:
+                return x1
+
+            x_next = x1 - f_x1 * (x1 - x0) / (f_x1 - f_x0)
+            x0, x1 = x1, x_next
+
+        raise ValueError("La méthode de la sécante n'a pas convergé.")
+
+    # Utilisation de la méthode de la sécante
+    lambda_c_numeric3 = secant_method(STCDS, x0=0.01, x1=0.02)
+
+    print(f"La valeur numérique de lambda_c par le méthode de la sécante est : {lambda_c_numeric3}")
 
