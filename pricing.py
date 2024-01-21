@@ -106,23 +106,23 @@ def pricingCDS():
     lambda_c_constant = 0.02  # Intensité de défaut constante sur 6 mois
     T0 = 0  # Temps initial
     T_final = 6 / 12  # Temps final en années
-    Ti_values = [0 / 12,  6 / 12]  # Temps final en années pour chaque terme de la somme
 
     # Calcul de l'intégrale numérique pour λc
     lambda_c_integral, _ = integrate.quad(integrand_lambda_c, T0, T_final, args=(lambda_c_constant,))
 
-    # Fonction représentant le CDS
-    def CDS(s):
-        return 1  # Remplacez cette fonction par la formule réelle du CDS si disponible
-
     # Calcul final du STCDS
     def STCDS(lambda_c_constant):
         # Calcul de la somme
-        sum_term = sum([0.25 * (integrate.quad(lambda s: integrand_lambda_c(s, lambda_c_constant), T0, Ti)[0] +integrate.quad(lambda s: integrand_lambda_c(s, lambda_c_constant) * (s - T0 - Ti) / Ti,T0, Ti)[0]) for Ti in Ti_values])
+        sum_term = 0.5 * (zeroCoupon(T0, 0.5, 0.03)*integrand_lambda_c(0.5,lambda_c_constant)+integrate.quad((lambda s: zeroCoupon(T0, s, 0.03)* ((s - T0)/(T_final- T0)) * integrand_lambda_c(s, lambda_c_constant) * lambda_c_constant),T0, T_final)[0])
+        # Print intermediate results for debugging
+        print(f"Sum term: {sum_term}")
 
-        return  (1 - RR) * (integrate.quad(lambda s: integrand_lambda_c(s, lambda_c_constant) * np.exp(-integrate.quad(lambda t: integrand_lambda_c(t, lambda_c_constant), T0, s)[0]), T0, T_final)[0] / sum_term)
+        return  (1 - RR) * ((integrate.quad((lambda s: zeroCoupon(T0, s, 0.03)*integrand_lambda_c(s,lambda_c_constant)*lambda_c_constant),T0, T_final))[0]/ sum_term)
 
     S_CDS = STCDS(lambda_c_constant)
+
+
+
     # Utiliser la méthode de Newton pour trouver numériquement la valeur de lambda_c
     #lambda_c_numeric = newton(lambda lambda_c: (STCDS(lambda_c) - 49.5)**2,lambda_c_constant-0.01)
     lambda_c_numeric = scipy.optimize.minimize(lambda lambda_c: (STCDS(lambda_c) - (49.5/10000)) ** 2, lambda_c_constant - 0.01, method="COBYLA")
