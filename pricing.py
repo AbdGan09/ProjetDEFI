@@ -104,7 +104,7 @@ def pricingCDS():
     # Paramètres
     RR = 0.4  # Taux de récupération
     lambda_c_constant = 0.02  # Intensité de défaut constante sur 6 mois
-    T0 = 0  # Temps initial
+    T0 = 0+10e-9  # Temps initial
     T_final = 6 / 12  # Temps final en années
 
     # Calcul de l'intégrale numérique pour λc
@@ -114,9 +114,10 @@ def pricingCDS():
 
     # Y'a un problème avec la fonction zero_coupon
     def STCDS(lambda_c_constant):
-        integrand = lambda s: zeroCoupon(T0, s, 0.03) * ((s - T0) / (T_final - T0)) * integrand_lambda_c(s,lambda_c_constant) * lambda_c_constant
+        integrand = lambda s: zeroCoupon(T0, T_final, 0.03) * ((s - T0) / (T_final - T0)) * integrand_lambda_c(s,lambda_c_constant) * lambda_c_constant
         result, _ = integrate.quad(integrand, T0, T_final)
         print("result",result)
+        print("zerocoupon",zeroCoupon(T0, 0.5, 0.03) )
         # Calcul de la somme
         sum_term = 0.5 * (zeroCoupon(T0, 0.5, 0.03)*integrand_lambda_c(0.5,lambda_c_constant)+integrate.quad((lambda s: zeroCoupon(T0, s, 0.03) * ((s - T0)/(T_final - T0)) * integrand_lambda_c(s, lambda_c_constant) * lambda_c_constant),T0, T_final)[0])
         # Print intermediate results for debugging
