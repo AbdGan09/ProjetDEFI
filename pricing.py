@@ -111,11 +111,17 @@ def pricingCDS():
     lambda_c_integral, _ = integrate.quad(integrand_lambda_c, T0, T_final, args=(lambda_c_constant,))
 
     # Calcul final du STCDS
+
+    # Y'a un problème avec la fonction zero_coupon
     def STCDS(lambda_c_constant):
+        integrand = lambda s: zeroCoupon(T0, s, 0.03) * ((s - T0) / (T_final - T0)) * integrand_lambda_c(s,lambda_c_constant) * lambda_c_constant
+        result, _ = integrate.quad(integrand, T0, T_final)
+        print("result",result)
         # Calcul de la somme
-        sum_term = 0.5 * (zeroCoupon(T0, 0.5, 0.03)*integrand_lambda_c(0.5,lambda_c_constant)+integrate.quad((lambda s: zeroCoupon(T0, s, 0.03)* ((s - T0)/(T_final- T0)) * integrand_lambda_c(s, lambda_c_constant) * lambda_c_constant),T0, T_final)[0])
+        sum_term = 0.5 * (zeroCoupon(T0, 0.5, 0.03)*integrand_lambda_c(0.5,lambda_c_constant)+integrate.quad((lambda s: zeroCoupon(T0, s, 0.03) * ((s - T0)/(T_final - T0)) * integrand_lambda_c(s, lambda_c_constant) * lambda_c_constant),T0, T_final)[0])
         # Print intermediate results for debugging
         print(f"Sum term: {sum_term}")
+        print(integrate.quad((lambda s: zeroCoupon(T0, s, 0.03) * ((s - T0)/(T_final - T0)) * integrand_lambda_c(s, lambda_c_constant) * lambda_c_constant),T0, T_final)[0])
 
         return  (1 - RR) * ((integrate.quad((lambda s: zeroCoupon(T0, s, 0.03)*integrand_lambda_c(s,lambda_c_constant)*lambda_c_constant),T0, T_final))[0]/ sum_term)
 
@@ -137,21 +143,21 @@ def pricingCDS():
     print(f"La valeur numérique de lambda_c e utilisant fsolve est : {lambda_c_numeric2}")
 
     # Implémentation de la méthode de la sécante
-    def secant_method(func, x0, x1, tolerance=1e-6, max_iter=100):
-        for i in range(max_iter):
-            f_x0 = func(x0)
-            f_x1 = func(x1)
+#    def secant_method(func, x0, x1, tolerance=1e-6, max_iter=100):
+#        for i in range(max_iter):
+#            f_x0 = func(x0)
+#            f_x1 = func(x1)
 
-            if np.abs(f_x1 - f_x0) < tolerance:
-                return x1
+#            if np.abs(f_x1 - f_x0) < tolerance:
+#                return x1
 
-            x_next = x1 - f_x1 * (x1 - x0) / (f_x1 - f_x0)
-            x0, x1 = x1, x_next
+#            x_next = x1 - f_x1 * (x1 - x0) / (f_x1 - f_x0)
+#            x0, x1 = x1, x_next
 
-        raise ValueError("La méthode de la sécante n'a pas convergé.")
+#        raise ValueError("La méthode de la sécante n'a pas convergé.")
 
     # Utilisation de la méthode de la sécante
-    lambda_c_numeric3 = secant_method(STCDS, x0=0.01, x1=0.02)
+#    lambda_c_numeric3 = secant_method(STCDS, x0=0.01, x1=0.02)
 
-    print(f"La valeur numérique de lambda_c par le méthode de la sécante est : {lambda_c_numeric3}")
+#    print(f"La valeur numérique de lambda_c par le méthode de la sécante est : {lambda_c_numeric3}")
 
