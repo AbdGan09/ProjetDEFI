@@ -107,12 +107,8 @@ def pricingCDS():
     T0 = 0+10e-9  # Temps initial
     T_final = 6 / 12  # Temps final en années
 
-    # Calcul de l'intégrale numérique pour λc
-    lambda_c_integral, _ = integrate.quad(integrand_lambda_c, T0, T_final, args=(lambda_c_constant,))
 
     # Calcul final du STCDS
-
-    # Y'a un problème avec la fonction zero_coupon
     def STCDS(lambda_c_constant):
         integrand = lambda s: zeroCoupon(T0, T_final, 0.03) * ((s - T0) / (T_final - T0)) * integrand_lambda_c(s,lambda_c_constant) * lambda_c_constant
         result, _ = integrate.quad(integrand, T0, T_final)
@@ -128,37 +124,13 @@ def pricingCDS():
 
     S_CDS = STCDS(lambda_c_constant)
 
+    # Utiliser la méthode de Powell pour trouver numériquement la valeur de lambda_c
 
-
-    # Utiliser la méthode de Newton pour trouver numériquement la valeur de lambda_c
-    #lambda_c_numeric = newton(lambda lambda_c: (STCDS(lambda_c) - 49.5)**2,lambda_c_constant-0.01)
-    lambda_c_numeric = scipy.optimize.minimize(lambda lambda_c: (STCDS(lambda_c) - (49.5/10000)) ** 2, lambda_c_constant - 0.01, method="COBYLA")
+    lambda_c_numeric = scipy.optimize.minimize(lambda lambda_c: (STCDS(lambda_c) - (49.5 / 10000)) ** 2,lambda_c_constant - 0.01, method="Powell")
+    lambda_c_numeric1 = scipy.optimize.minimize(lambda lambda_c: (STCDS(lambda_c) - (49.5/10000)) ** 2, lambda_c_constant - 0.01, method="COBYLA")
 
     print(f"La valeur du CDS sur l'intervalle [0, 6 mois] est : {S_CDS}")
     print(f"La valeur de lambda_c_constant est : {lambda_c_constant}")
-    print(f"La valeur numérique de lambda_c est : {lambda_c_numeric}")
-
-    # Utilisation de fsolve pour trouver numériquement la valeur de lambda_c
-    lambda_c_numeric2 = fsolve(STCDS, x0=0.02)[0]
-
-    print(f"La valeur numérique de lambda_c e utilisant fsolve est : {lambda_c_numeric2}")
-
-    # Implémentation de la méthode de la sécante
-#    def secant_method(func, x0, x1, tolerance=1e-6, max_iter=100):
-#        for i in range(max_iter):
-#            f_x0 = func(x0)
-#            f_x1 = func(x1)
-
-#            if np.abs(f_x1 - f_x0) < tolerance:
-#                return x1
-
-#            x_next = x1 - f_x1 * (x1 - x0) / (f_x1 - f_x0)
-#            x0, x1 = x1, x_next
-
-#        raise ValueError("La méthode de la sécante n'a pas convergé.")
-
-    # Utilisation de la méthode de la sécante
-#    lambda_c_numeric3 = secant_method(STCDS, x0=0.01, x1=0.02)
-
-#    print(f"La valeur numérique de lambda_c par le méthode de la sécante est : {lambda_c_numeric3}")
+    print(f"La valeur numérique de lambda_c par la méthode de Powell est : {lambda_c_numeric}")
+    print(f"La valeur numérique de lambda_c par la méthode de Cobyla est : {lambda_c_numeric1}")
 
