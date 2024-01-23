@@ -134,4 +134,3 @@ def pricingCDS():
     print(f"La valeur de lambda_c_constant est : {lambda_c_constant}")
     print(f"La valeur numérique de lambda_c par la méthode de Powell est : {lambda_c_numeric}")
     print(f"La valeur numérique de lambda_c par la méthode de Cobyla est : {lambda_c_numeric1}")
-
