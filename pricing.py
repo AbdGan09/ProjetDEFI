@@ -106,19 +106,20 @@ def pricingCDS():
     lambda_c_constant = 0.02  # Intensité de défaut constante sur 6 mois
     T0 = 0+10e-9  # Temps initial
     T_final = 6 / 12  # Temps final en années
+    T_values = [T0, 3/12, T_final]
 
 
     # Calcul final du STCDS
     def STCDS(lambda_c_constant):
         integrand = lambda s: zeroCoupon(T0, T_final, 0.03) * ((s - T0) / (T_final - T0)) * integrand_lambda_c(s,lambda_c_constant) * lambda_c_constant
         result, _ = integrate.quad(integrand, T0, T_final)
-        print("result",result)
-        print("zerocoupon",zeroCoupon(T0, 0.5, 0.03) )
+
         # Calcul de la somme
-        sum_term = 0.5 * (zeroCoupon(T0, 0.5, 0.03)*integrand_lambda_c(0.5,lambda_c_constant)+integrate.quad((lambda s: zeroCoupon(T0, s, 0.03) * ((s - T0)/(T_final - T0)) * integrand_lambda_c(s, lambda_c_constant) * lambda_c_constant),T0, T_final)[0])
+        sum_term = 0.5 * sum([(zeroCoupon(T0, Ti, 0.03)*integrand_lambda_c(Ti-T0,lambda_c_constant)+integrate.quad((lambda s: zeroCoupon(T0, s, 0.03) * ((s - Tj)/(Ti - Tj)) * integrand_lambda_c(s, lambda_c_constant) * lambda_c_constant),Tj, Ti)[0]) for (Ti, Tj) in zip(T_values[1:],T_values[:-1])])
+
         # Print intermediate results for debugging
-        print(f"Sum term: {sum_term}")
-        print(integrate.quad((lambda s: zeroCoupon(T0, s, 0.03) * ((s - T0)/(T_final - T0)) * integrand_lambda_c(s, lambda_c_constant) * lambda_c_constant),T0, T_final)[0])
+        #print(f"Sum term: {sum_term}")
+        #print(integrate.quad((lambda s: zeroCoupon(T0, s, 0.03) * ((s - T0)/(T_final - T0)) * integrand_lambda_c(s, lambda_c_constant) * lambda_c_constant),T0, T_final)[0])
 
         return  (1 - RR) * ((integrate.quad((lambda s: zeroCoupon(T0, s, 0.03)*integrand_lambda_c(s,lambda_c_constant)*lambda_c_constant),T0, T_final))[0]/ sum_term)
 
