@@ -1,7 +1,9 @@
 #lieu pour mettre les class ou fonction de test:
 from pricing import *
 from quant import *
-
+data = importData(r'C:\Users\rifad\OneDrive - Ecole Centrale Casablanca\Documents\Mobilité\3A_Marseille\En cours\Projet DDEFI\ProjetDEFI\boostrapping_etudiants2.xlsx', "Donnee")
+spread_CDS = importData(r'C:\Users\rifad\OneDrive - Ecole Centrale Casablanca\Documents\Mobilité\3A_Marseille\En cours\Projet DDEFI\ProjetDEFI\spreads_CDS.xlsx', 'SpreadsCDS')
+cs = ZeroCouponCurve(data)
 class Main:
     def __init__(self, param):
         pass
@@ -58,12 +60,34 @@ class Main:
         print(courbe)
         plt.plot(x,courbe)
         plt.show()
+
+    @staticmethod
     def testCDS():
         pricingCDS()
+
+    @staticmethod
+    def testSixMonth():
+        print("SixMonth Spread is:", calcul_SpreadCDS(0.012, 0.5, cs, spread_CDS, 𝜏i = 0.25, RR = 0.4, T0 = 0))
+        print("Defaut Intensity for 6 Month is", get_Default_Intensity(49.5, 0.5, cs, spread_CDS, lambda_c_constant=0.0001))
+
+    @staticmethod
+    def testOneYearCDS():
+        print("One_Year_SpreadCDS is", One_Year_SpreadCDS(0.04, 1, cs, spread_CDS, 𝜏i=0.25, RR=0.4, T0=0))
+        print("Defaut Intensity for On Year is", get_Default_Intensity(46.5, 1, cs, spread_CDS , lambda_c_constant= 0.0001))
+
+    @staticmethod
+    def testNyearCDS(N=2):
+        print("N year spread is", SpreadCDSRecursive(0.04, 2, cs, spread_CDS, 𝜏i=0.25, RR=0.4, T0=0))
+        print("Defaut Intensity for N Year is", get_Default_Intensity(59.53, 2, cs, spread_CDS, lambda_c_constant=0.0001))
+
 #Main.courbe_fwdinst(10)
 #Main.test_Hull_White()
 #Main.testTrajectoire()
 #Main.testSimulationTaux()
 #Main.testSimulationP()
 #Main.testSimulationVrec()
-Main.testCDS()
+#Main.testCDS()
+
+Main.testSixMonth()
+Main.testOneYearCDS()
+Main.testNyearCDS()

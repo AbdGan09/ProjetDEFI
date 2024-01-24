@@ -6,8 +6,9 @@ from scipy.optimize import newton
 from scipy.optimize import fsolve
 import scipy.optimize._minimize
 #simulation de trajectoire
-data = importData(r'C:\Users\rifad\OneDrive - Ecole Centrale Casablanca\Documents\Mobilité\3A_Marseille\En cours\Projet DDEFI\ProjetDEFI\boostrapping_etudiants.xlsx', "Donnee")
+data = importData(r'C:\Users\rifad\OneDrive - Ecole Centrale Casablanca\Documents\Mobilité\3A_Marseille\En cours\Projet DDEFI\ProjetDEFI\boostrapping_etudiants2.xlsx', "Donnee")
 spread_CDS = importData(r'C:\Users\rifad\OneDrive - Ecole Centrale Casablanca\Documents\Mobilité\3A_Marseille\En cours\Projet DDEFI\ProjetDEFI\spreads_CDS.xlsx', 'SpreadsCDS')
+cs = ZeroCouponCurve(data)
 def generateurTrajectoire(n_traject, n_obser,T, 𝜏= 0.5):
     dt = T / n_obser
     Normal_Matrix = np.random.normal(0, np.sqrt(dt), (n_traject, n_obser - 1))
@@ -147,7 +148,6 @@ def get_Default_Intensity(spread, Maturity, ZC_curve, spreads_data=None, lambda_
         lambda_c_numeric = scipy.optimize.minimize(lambda lambda_c: (One_Year_SpreadCDS(lambda_c, Maturity, ZC_curve, spreads_data) - (spread / 10000)) ** 2, lambda_c_constant - 0.00001, method="Powell").x[0]
     else:
         lambda_c_numeric = scipy.optimize.minimize(lambda lambda_c: (SpreadCDSRecursive(lambda_c, Maturity, ZC_curve, spreads_data) - (spread / 10000)) ** 2, lambda_c_constant - 0.00001, method="Powell").x[0]
-    print("lambda_c_numeric", lambda_c_numeric)
     return lambda_c_numeric
 
 
@@ -175,17 +175,12 @@ def One_Year_SpreadCDS(lambdas, Maturity, ZC_curve, spreads_data, 𝜏i=0.25, RR
         if (i + 1) * 𝜏i <= 0.5:
             current_lambda = lambda_6_M
             integrand_deno_6M = lambda s: ZC_curve(s) * ((s - T0) / (𝜏i)) * integrand_lambda_c(s, current_lambda) * current_lambda
-            print("current_lambda", current_lambda)
             first_term = ZC_curve((i + 1) * 𝜏i) * integrand_lambda_c((i + 1) * 𝜏i, current_lambda)
-            print("first_term ", first_term)
             second_term, _ = integrate.quad(integrand_deno_6M, i * 𝜏i, (i + 1) * 𝜏i)
-            print("second_term ", second_term)
             term_deno += (first_term + second_term) * 𝜏i
         else:
             first_term = ZC_curve((i + 1) * 𝜏i) * (integrand_lambda_c(0.5, lambda_6_M) + integrand_lambda_c(((i + 1) * 𝜏i - 0.5), lambdas))
-            print("first_term ", first_term)
             second_term, _ = integrate.quad(integrand_deno, i * 𝜏i, (i + 1) * 𝜏i)
-            print("second_term ", second_term)
             term_deno += (first_term + second_term) * 𝜏i
     term_num = (1 - RR) * ((integrate.quad((lambda s: ZC_curve(s) * integrand_lambda_c(s, lambda_6_M) * lambda_6_M), T0, 0.5))[0] + (integrate.quad((lambda s: ZC_curve(s) * (integrand_lambda_c(s, lambdas)) * lambdas), 0.5, Maturity))[0])
     return term_num / term_deno
@@ -206,7 +201,6 @@ def SpreadCDSRecursive(lambdas, Maturity, ZC_curve, spread_CDS, 𝜏i=0.25, RR=0
 
     def integrand_lambda(u, lambdas, TO=0):
         current_lambda = Map_Lambda(u, lambdas)
-        print(current_lambda)
         return np.exp(-current_lambda * (u - TO))
 
     def calculate_term_num(s, lambdas, init):
