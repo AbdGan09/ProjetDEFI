@@ -68,7 +68,7 @@ class Main:
     @staticmethod
     def testSixMonth():
         print("SixMonth Spread is:", calcul_SpreadCDS(0.012, 0.5, cs, spread_CDS, 𝜏i = 0.25, RR = 0.4, T0 = 0))
-        print("Defaut Intensity for 6 Month is", get_Default_Intensity(49.5, 0.5, cs, spread_CDS, lambda_c_constant=0.0001))
+        print("Defaut Intensity for 6 Month is", get_Default_Intensity(12.32, 0.5, cs, spread_CDS, lambda_c_constant=0.0001))
 
     @staticmethod
     def testOneYearCDS():
@@ -76,8 +76,8 @@ class Main:
         print("Defaut Intensity for On Year is", get_Default_Intensity(46.5, 1, cs, spread_CDS , lambda_c_constant= 0.0001))
 
     @staticmethod
-    def testNyearCDS(N=2):
-        print("N year spread is", SpreadCDSRecursive(0.04, 2, cs, spread_CDS, 𝜏i=0.25, RR=0.4, T0=0))
+    def testNyearCDS(N=1):
+        print("N year spread is", SpreadCDSRecursive(0.04, N, cs, spread_CDS, 𝜏i=0.25, RR=0.4, T0=0))
         print("Defaut Intensity for N Year is", get_Default_Intensity(59.53, 2, cs, spread_CDS, lambda_c_constant=0.0001))
 
 #Main.courbe_fwdinst(10)
@@ -90,4 +90,4 @@ class Main:
 
 Main.testSixMonth()
 Main.testOneYearCDS()
-Main.testNyearCDS()
+#Main.testNyearCDS()

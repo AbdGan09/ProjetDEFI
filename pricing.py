@@ -167,7 +167,7 @@ def calcul_SpreadCDS(lambdas, Maturity, ZC_curve, spreads=None, 𝜏i=0.25, RR=0
 
 def One_Year_SpreadCDS(lambdas, Maturity, ZC_curve, spreads_data, 𝜏i=0.25, RR=0.4, T0=0):
     # pour 1 year je dois splité mes intégrale ens deux à chaque fois pour tenir conte de la constance entre 0 et 6 et entre 6 et 12 mois résiduelle
-    lambda_6_M = get_Default_Intensity(spreads_data["VOWG6MEUAM=R"][0], spreads_data["Matu_By_Year"][0], ZC_curve)
+    lambda_6_M = get_Default_Intensity(spreads_data["IBE6MEUAM=R"][0], spreads_data["Matu_By_Year"][0], ZC_curve)
     integrand_deno = lambda s: ZC_curve(s) * ((s - T0) / (𝜏i)) * integrand_lambda_c(s, lambdas) * lambdas
     term_deno = 0
     for i in range(int(Maturity / 𝜏i) + 1):
@@ -188,7 +188,7 @@ def One_Year_SpreadCDS(lambdas, Maturity, ZC_curve, spreads_data, 𝜏i=0.25, RR
 def Generalisation_Defaut(spreads_data, maturities, ZC_curve):
     lambdas_result = {}
     for i in range(len(maturities)):
-        lambdas_result[str(spreads_data["Matu_By_Year"][i])] = get_Default_Intensity(spread_CDS["VOWG6MEUAM=R"][i], spread_CDS["Matu_By_Year"][i], ZC_curve, spread_CDS)
+        lambdas_result[str(spreads_data["Matu_By_Year"][i])] = get_Default_Intensity(spread_CDS["IBE6MEUAM=R"][i], spread_CDS["Matu_By_Year"][i], ZC_curve, spread_CDS)
     return lambdas_result
 
 
@@ -197,7 +197,7 @@ def SpreadCDSRecursive(lambdas, Maturity, ZC_curve, spread_CDS, 𝜏i=0.25, RR=0
     dico_Lambda = {}
     index_matu = list(spread_CDS["Matu_By_Year"]).index(Maturity)
     for i in range(index_matu):
-        dico_Lambda[str(spread_CDS["Matu_By_Year"][i])] = get_Default_Intensity(spread_CDS["VOWG6MEUAM=R"][i], spread_CDS["Matu_By_Year"][i], ZC_curve, spread_CDS)
+        dico_Lambda[str(spread_CDS["Matu_By_Year"][i])] = get_Default_Intensity(spread_CDS["IBE6MEUAM=R"][i], spread_CDS["Matu_By_Year"][i], ZC_curve, spread_CDS)
 
     def integrand_lambda(u, lambdas, TO=0):
         current_lambda = Map_Lambda(u, lambdas)

@@ -105,3 +105,6 @@ def hullWhite(isForSimulation = False, dW = None, tau = 0.01, tn = None, Sigma =
         else:
             r_n_1 = hullWhite(False, dW, tau, tn-tau)
             return r_n_1 + (gettheta(tn-tau) - a * r_n_1) * tau + Sigma * np.sqrt(tau) * dW
+
+
+#calcule de la CVA du Swap en utilisant les elements dont on dispose.
