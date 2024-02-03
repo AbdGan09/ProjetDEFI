@@ -6,8 +6,9 @@ from scipy.optimize import newton
 from scipy.optimize import fsolve
 import scipy.optimize._minimize
 #simulation de trajectoire
-data = importData(r'C:\Users\rifad\OneDrive - Ecole Centrale Casablanca\Documents\Mobilité\3A_Marseille\En cours\Projet DDEFI\ProjetDEFI\boostrapping_etudiants.xlsx', "Donnee")
-spread_CDS = importData(r'C:\Users\rifad\OneDrive - Ecole Centrale Casablanca\Documents\Mobilité\3A_Marseille\En cours\Projet DDEFI\ProjetDEFI\spreads_CDS.xlsx', 'SpreadsCDS')
+data = importData(r'boostrapping_etudiants2.xlsx', "Donnee")
+spread_CDS = importData(r'spreads_CDS.xlsx', 'SpreadsCDS')
+cs = ZeroCouponCurve(data)
 def generateurTrajectoire(n_traject, n_obser,T, 𝜏= 0.5):
     dt = T / n_obser
     Normal_Matrix = np.random.normal(0, np.sqrt(dt), (n_traject, n_obser - 1))
