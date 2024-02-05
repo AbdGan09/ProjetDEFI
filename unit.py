@@ -64,7 +64,7 @@ class Main:
         pricingCDS()
     @staticmethod
     def testSixMonth():
-        print("SixMonth Spread is:", calcul_SpreadCDS(0.012, 0.5, cs, spread_CDS, 𝜏i=0.25, RR=0.4, T0=0))
+        print("SixMonth Spread is:", calcul_SpreadCDS(0.02, 0.5, cs, spread_CDS, 𝜏i=0.25, RR=0.4, T0=0))
         print("Defaut Intensity for 6 Month is",get_Default_Intensity(12.32, 0.5, cs, spread_CDS, lambda_c_constant=0.0001))
 
     @staticmethod
@@ -88,6 +88,6 @@ class Main:
 #Main.testSimulationVrec()
 #Main.testCDS()
 
-Main.testSixMonth()
+#Main.testSixMonth()
 Main.testOneYearCDS()
 #Main.testNyearCDS()
