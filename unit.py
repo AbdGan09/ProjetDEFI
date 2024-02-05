@@ -74,11 +74,14 @@ class Main:
               get_Default_Intensity(46.5, 1, cs, spread_CDS, lambda_c_constant=0.0001))
 
     @staticmethod
-    def testNyearCDS(N=1):
-        print("N year spread is", SpreadCDSRecursive(0.04, N, cs, spread_CDS, 𝜏i=0.25, RR=0.4, T0=0))
-        print("Defaut Intensity for N Year is",
-              get_Default_Intensity(59.53, 2, cs, spread_CDS, lambda_c_constant=0.0001))
-
+    def testNyearCDS(N=10):
+        res = SpreadCDSRecursive(0.04, N, cs, spread_CDS, 𝜏i=0.25, RR=0.4, T0=0)
+        Y=list(res.values())
+        Y.append(Y[-1])
+        X = list(res.keys())
+        X.append(N)
+        plt.step(X,Y, where='post', linestyle='-')
+        plt.show()
 
 #Main.courbe_fwdinst(10)
 #Main.test_Hull_White()
