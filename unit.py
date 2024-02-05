@@ -89,5 +89,5 @@ class Main:
 #Main.testCDS()
 
 #Main.testSixMonth()
-Main.testOneYearCDS()
-#Main.testNyearCDS()
+#Main.testOneYearCDS()
+Main.testNyearCDS()
