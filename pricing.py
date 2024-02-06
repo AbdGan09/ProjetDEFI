@@ -183,6 +183,7 @@ def One_Year_SpreadCDS(lambdas, Maturity, ZC_curve, spreads_data, 𝜏i=0.25, RR
 
 lambda_6_M = get_Default_Intensity(spread_CDS["IBE6MEUAM=R"][0], spread_CDS["Matu_By_Year"][0], cs)
 def NYear_SpreadCDS(lambdas, Maturity, ZC_curve, spreads_data, 𝜏=0.25, RR=0.4, T0=0):
+    print("lambdas", lambdas)
     # pour 1 year je dois splité mes intégrale ens deux à chaque fois pour tenir conte de la constance entre 0 et 6 et entre 6 et 12 mois résiduelle
     #lambda_6_M = get_Default_Intensity(spreads_data["VOWG6MEUAM=R"][0], spreads_data["Matu_By_Year"][0], ZC_curve)
     integrand_deno = lambda s: ZC_curve(s) * ((s - T0) / (𝜏)) * integrand_lambda_c(s, lambdas) * lambdas
