@@ -120,10 +120,6 @@ def pricingCDS():
         # Calcul de la somme
         sum_term = 0.5 * sum([(zeroCoupon(T0, Ti, 0.03)*integrand_lambda_c(Ti-T0,lambda_c_constant)+integrate.quad((lambda s: zeroCoupon(T0, s, 0.03) * ((s - Tj)/(Ti - Tj)) * integrand_lambda_c(s, lambda_c_constant) * lambda_c_constant),Tj, Ti)[0]) for (Ti, Tj) in zip(T_values[1:],T_values[:-1])])
 
-        # Print intermediate results for debugging
-        #print(f"Sum term: {sum_term}")
-        #print(integrate.quad((lambda s: zeroCoupon(T0, s, 0.03) * ((s - T0)/(T_final - T0)) * integrand_lambda_c(s, lambda_c_constant) * lambda_c_constant),T0, T_final)[0])
-
         return  (1 - RR) * ((integrate.quad((lambda s: zeroCoupon(T0, s, 0.03)*integrand_lambda_c(s,lambda_c_constant)*lambda_c_constant),T0, T_final))[0]/ sum_term)
 
     S_CDS = STCDS(lambda_c_constant)
@@ -144,8 +140,8 @@ def get_Default_Intensity(spread, Maturity, ZC_curve, spreads_data=None, lambda_
     # For the case of 6 months
     if Maturity == 0.5:
         lambda_c_numeric = scipy.optimize.minimize(lambda lambda_c: (calcul_SpreadCDS(lambda_c, Maturity, ZC_curve, spreads_data) - (spread / 10000)) ** 2, lambda_c_constant - 0.00001, method="Powell").x[0]
-    elif Maturity == 1:
-        lambda_c_numeric = scipy.optimize.minimize(lambda lambda_c: (One_Year_SpreadCDS(lambda_c, Maturity, ZC_curve, spreads_data) - (spread / 10000)) ** 2, lambda_c_constant - 0.00001, method="Powell").x[0]
+    #elif Maturity == 1:
+        #lambda_c_numeric = scipy.optimize.minimize(lambda lambda_c: (One_Year_SpreadCDS(lambda_c, Maturity, ZC_curve, spreads_data) - (spread / 10000)) ** 2, lambda_c_constant - 0.00001, method="Powell").x[0]
     else:
         lambda_c_numeric = scipy.optimize.minimize(lambda lambda_c: (NYear_SpreadCDS(lambda_c, Maturity, ZC_curve, spreads_data) - (spread / 10000)) ** 2, lambda_c_constant - 0.00001, method="Powell").x[0]
     print("lambda_c_numeric", lambda_c_numeric, Maturity)
@@ -186,26 +182,29 @@ def One_Year_SpreadCDS(lambdas, Maturity, ZC_curve, spreads_data, 𝜏i=0.25, RR
     return term_num / term_deno
 
 lambda_6_M = get_Default_Intensity(spread_CDS["IBE6MEUAM=R"][0], spread_CDS["Matu_By_Year"][0], cs)
-def NYear_SpreadCDS(lambdas, Maturity, ZC_curve, spreads_data, 𝜏i=0.25, RR=0.4, T0=0):
+def NYear_SpreadCDS(lambdas, Maturity, ZC_curve, spreads_data, 𝜏=0.25, RR=0.4, T0=0):
     # pour 1 year je dois splité mes intégrale ens deux à chaque fois pour tenir conte de la constance entre 0 et 6 et entre 6 et 12 mois résiduelle
     #lambda_6_M = get_Default_Intensity(spreads_data["VOWG6MEUAM=R"][0], spreads_data["Matu_By_Year"][0], ZC_curve)
-    integrand_deno = lambda s: ZC_curve(s) * ((s - T0) / (𝜏i)) * integrand_lambda_c(s, lambdas) * lambdas
+    integrand_deno = lambda s: ZC_curve(s) * ((s - T0) / (𝜏)) * integrand_lambda_c(s, lambdas) * lambdas
     term_deno = 0
     term_num = (integrate.quad((lambda s: ZC_curve(s) * integrand_lambda_c(s, lambda_6_M) * lambda_6_M), T0, 0.5))[0]
-    for i in range(int(Maturity / 𝜏i) + 1):
+    mat = [0.5,1, 2, 3, 4]
+    for i in range(int(Maturity / 𝜏) + 1):
         current_lambda = lambdas
-        if (i + 1) * 𝜏i <= 0.5:
+        if (i + 1) * 𝜏 <= 0.5:
             current_lambda = lambda_6_M
-            integrand_deno_6M = lambda s: ZC_curve(s) * ((s - T0) / (𝜏i)) * integrand_lambda_c(s, current_lambda) * current_lambda
-            first_term = ZC_curve((i + 1) * 𝜏i) * integrand_lambda_c((i + 1) * 𝜏i, current_lambda)
-            second_term, _ = integrate.quad(integrand_deno_6M, i * 𝜏i, (i + 1) * 𝜏i)
-            term_deno += (first_term + second_term) * 𝜏i
+            integrand_deno_6M = lambda s: ZC_curve(s) * ((s - (i*𝜏)) / (𝜏)) * integrand_lambda_c(s, current_lambda) * current_lambda
+            first_term = ZC_curve((i + 1) * 𝜏) * integrand_lambda_c((i + 1) * 𝜏, current_lambda)
+            second_term, _ = integrate.quad(integrand_deno_6M, i * 𝜏, (i + 1) * 𝜏)
+            term_deno += (first_term + second_term) * 𝜏
         else:
-            first_term = ZC_curve((i + 1) * 𝜏i) * (integrand_lambda_c(0.5, lambda_6_M) + integrand_lambda_c(((i + 1) * 𝜏i - 0.5), lambdas))
-            second_term, _ = integrate.quad(integrand_deno, i * 𝜏i, (i + 1) * 𝜏i)
-            term_deno += (first_term + second_term) * 𝜏i
+            first_term = ZC_curve((i + 1) * 𝜏) * (integrand_lambda_c((i + 1) * 𝜏 - i * 𝜏, lambdas))
+            second_term, _ = integrate.quad(integrand_deno, i * 𝜏, (i + 1) * 𝜏)
+            term_deno += (first_term + second_term) * 𝜏
+            if (i + 1) * 𝜏 > mat[1]:
+                term_num =+ integrate.quad((lambda s: ZC_curve(s) * (integrand_lambda_c(s, lambdas)) * lambdas), mat[0], mat[1])[0]
+                mat = mat[1:]
 
-        term_num =+ integrate.quad((lambda s: ZC_curve(s) * (integrand_lambda_c(s, lambdas)) * lambdas), 0.5, Maturity)[0]
     return ((1 - RR) * term_num )/ term_deno
 
 def Generalisation_Defaut(spreads_data, maturities, ZC_curve):
