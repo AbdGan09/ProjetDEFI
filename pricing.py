@@ -188,7 +188,7 @@ def NYear_SpreadCDS(lambdas, Maturity, ZC_curve, spreads_data, 𝜏=0.25, RR=0.4
     integrand_deno = lambda s: ZC_curve(s) * ((s - T0) / (𝜏)) * integrand_lambda_c(s, lambdas) * lambdas
     term_deno = 0
     term_num = (integrate.quad((lambda s: ZC_curve(s) * integrand_lambda_c(s, lambda_6_M) * lambda_6_M), T0, 0.5))[0]
-    mat = [0.5,1, 2, 3, 4]
+    mat = [0.5,1, 2, 3,4]
     for i in range(int(Maturity / 𝜏) + 1):
         current_lambda = lambdas
         if (i + 1) * 𝜏 <= 0.5:
