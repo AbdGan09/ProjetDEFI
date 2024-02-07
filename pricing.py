@@ -207,7 +207,7 @@ def NYear_SpreadCDS(lambdas, Maturity, ZC_curve, lambda_data, 𝜏=0.25, RR=0.4,
                     second_term, _ = integrate.quad(integrand_deno, i * 𝜏, (i + 1) * 𝜏)
                     term_deno += (first_term + second_term) * 𝜏
                     i+=1
-                term_num =+ integrate.quad((lambda s: ZC_curve(s) * (integrand_lambda_c(s, current_lambda)) * current_lambda), mat[0], mat[1])[0]
+                term_num += integrate.quad((lambda s: ZC_curve(s) * (integrand_lambda_c(s, current_lambda)) * current_lambda), mat[0], mat[1])[0]
                 mat = mat[1:]
             except:
                 current_lambda = lambdas
@@ -217,7 +217,7 @@ def NYear_SpreadCDS(lambdas, Maturity, ZC_curve, lambda_data, 𝜏=0.25, RR=0.4,
                 i+=1
 
         print('incr', i)
-    term_num =+ integrate.quad((lambda s: ZC_curve(s) * (integrand_lambda_c(s, current_lambda)) * current_lambda), mat[0], mat[1])[0]
+    term_num += integrate.quad((lambda s: ZC_curve(s) * (integrand_lambda_c(s, current_lambda)) * current_lambda), mat[0], mat[1])[0]
     return ((1 - RR) * term_num )/ term_deno
 
 def Generalisation_Defaut(spreads_data, maturities, ZC_curve):
