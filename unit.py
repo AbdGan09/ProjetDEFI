@@ -74,7 +74,7 @@ class Main:
               get_Default_Intensity(46.5, 1, cs, spread_CDS, lambda_c_constant=0.0001))
 
     @staticmethod
-    def testNyearCDS(N=4):
+    def testNyearCDS(N=10):
         res = SpreadCDSRecursive(0.04, N, cs, spread_CDS, 𝜏i=0.25, RR=0.4, T0=0)
         Y=list(res.values())
         Y.append(Y[-1])
