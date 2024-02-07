@@ -1,9 +1,11 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from scipy.interpolate import CubicSpline
 import seaborn as sns
 from scipy import optimize
 import scipy.misc
+from datetime import datetime, timedelta
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -56,6 +58,30 @@ def BondPrice(t, T, α = 0.1):
 # t: pour le temps actuel
 def zeroCoupon(t, T, rate):
     return getA(t, T) * np.exp(-BondPrice(t, T) * rate)
+
+
+def importData(path, index_Column):
+    data = pd.read_excel(path, sheet_name=index_Column)
+    return data
+
+def ZeroCouponCurve(data):
+    start_date = datetime(2023, 11, 28)
+    x = np.array([(date - start_date).days / 365 for date in data["Maturity"]])
+    cs = CubicSpline(x, data["P(t0,ti)"])
+    return cs
+
+
+def getZC_By_ZCC(Curve, maturity_fraction):
+    return Curve(maturity_fraction)
+
+
+def get_Spread_CDS(Data, Ticker):
+    return Data[[Ticker]]
+
+# Fonction représentant l'intégrande pour λc
+def integrand_lambda_c(s, lambdas, TO=0):
+    return np.exp(-lambdas * (s-TO))
+
 
 
 # Modele de Hull White

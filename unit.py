@@ -1,7 +1,9 @@
 #lieu pour mettre les class ou fonction de test:
 from pricing import *
 from quant import *
-
+data = importData(r'boostrapping_etudiants2.xlsx', "Donnee")
+spread_CDS = importData(r'spreads_CDS.xlsx', 'SpreadsCDS')
+cs = ZeroCouponCurve(data)
 class Main:
     def __init__(self, param):
         pass
@@ -58,10 +60,37 @@ class Main:
         print(courbe)
         plt.plot(x,courbe)
         plt.show()
+    def testCDS():
+        pricingCDS()
+    @staticmethod
+    def testSixMonth():
+        print("SixMonth Spread is:", calcul_SpreadCDS(0.02, 0.5, cs, spread_CDS, 𝜏i=0.25, RR=0.4, T0=0))
+        print("Defaut Intensity for 6 Month is",get_Default_Intensity(12.32, 0.5, cs, spread_CDS, lambda_c_constant=0.0001))
+
+    @staticmethod
+    def testOneYearCDS():
+        print("One_Year_SpreadCDS is", One_Year_SpreadCDS(0.04, 1, cs, spread_CDS, 𝜏i=0.25, RR=0.4, T0=0))
+        print("Defaut Intensity for On Year is",
+              get_Default_Intensity(46.5, 1, cs, spread_CDS, lambda_c_constant=0.0001))
+
+    @staticmethod
+    def testNyearCDS(N=10):
+        res = SpreadCDSRecursive(0.04, N, cs, spread_CDS, 𝜏i=0.25, RR=0.4, T0=0)
+        Y=list(res.values())
+        Y.append(Y[-1])
+        X = list(res.keys())
+        X.append(N)
+        plt.step(X,Y, where='post', linestyle='-')
+        plt.show()
 
 #Main.courbe_fwdinst(10)
 #Main.test_Hull_White()
 #Main.testTrajectoire()
 #Main.testSimulationTaux()
 #Main.testSimulationP()
-Main.testSimulationVrec()
+#Main.testSimulationVrec()
+#Main.testCDS()
+
+#Main.testSixMonth()
+#Main.testOneYearCDS()
+Main.testNyearCDS()
