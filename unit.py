@@ -79,7 +79,7 @@ class Main:
         Y=list(res.values())
         Y.append(Y[-1])
         X = list(res.keys())
-        X.append(N)
+        X.insert(0,0)
         plt.step(X,Y, where='post', linestyle='-')
         plt.show()
 
