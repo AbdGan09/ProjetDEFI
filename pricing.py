@@ -187,7 +187,7 @@ def NYear_SpreadCDS(lambdas, Maturity, ZC_curve, lambda_data, 𝜏=0.25, RR=0.4,
     integrand_deno = lambda s: ZC_curve(s) * ((s - T0) / (𝜏)) * integrand_lambda_c(s, lambdas) * lambdas
     term_deno = 0
     term_num = (integrate.quad((lambda s: ZC_curve(s) * integrand_lambda_c(s, lambda_6_M) * lambda_6_M), T0, 0.5))[0]
-    mat = [0.5,1, 2, 3,4]
+    mat = [0.5, 1, 2, 3,4]
     i=0
     while i <=(Maturity / 𝜏):
         if (i + 1) * 𝜏 <= 0.5:
@@ -203,22 +203,26 @@ def NYear_SpreadCDS(lambdas, Maturity, ZC_curve, lambda_data, 𝜏=0.25, RR=0.4,
                     print("l",lambda_data)
                     current_lambda = lambda_data[str(float(mat[1]))]
                     print("c",current_lambda)
+                    integrand_deno = lambda s: ZC_curve(s) * ((s - i*𝜏) / (𝜏)) * integrand_lambda_c(s, current_lambda) * current_lambda
                     first_term *= ZC_curve((i + 1) * 𝜏) * (integrand_lambda_c((i + 1) * 𝜏 - i * 𝜏, current_lambda))
                     second_term *= integrate.quad(integrand_deno, i * 𝜏, (i + 1) * 𝜏)[0]
                     i+=1
 
                 term_deno += (first_term + second_term) * 𝜏
-                term_num += integrate.quad((lambda s: ZC_curve(s) * (integrand_lambda_c(s, current_lambda)) * current_lambda), mat[0], mat[1])[0]
+                term_num = sum([integrate.quad((lambda s: ZC_curve(s) * (integrand_lambda_c(s, lambda_data[str(float(mat[i]))])) * lambda_data[str(float(mat[i]))]), mat[i],mat[i + 1])[0] for i in range(len(mat))])
                 mat = mat[1:]
             except:
                 current_lambda = lambdas
+                integrand_deno = lambda s: ZC_curve(s) * ((s - i * 𝜏) / (𝜏)) * integrand_lambda_c(s,current_lambda) * current_lambda
+
                 first_term  *= ZC_curve((i + 1) * 𝜏) * (integrand_lambda_c((i + 1) * 𝜏 - i * 𝜏, current_lambda))
                 second_term *= integrate.quad(integrand_deno, i * 𝜏, (i + 1) * 𝜏)[0]
                 i+=1
             term_deno += (first_term + second_term) * 𝜏
+            print(term_num)
+            term_num += (integrate.quad((lambda s: ZC_curve(s) * integrand_lambda_c(s, lambdas) * lambdas), mat[0],mat[1]))[0]
 
         print('incr', i)
-    term_num += integrate.quad((lambda s: ZC_curve(s) * (integrand_lambda_c(s, current_lambda)) * current_lambda), mat[0], mat[1])[0]
     return ((1 - RR) * term_num )/ term_deno
 
 def Generalisation_Defaut(spreads_data, maturities, ZC_curve):
