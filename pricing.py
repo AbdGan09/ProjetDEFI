@@ -181,33 +181,43 @@ def One_Year_SpreadCDS(lambdas, Maturity, ZC_curve, spreads_data, 𝜏i=0.25, RR
     term_num = (1 - RR) * ((integrate.quad((lambda s: ZC_curve(s) * integrand_lambda_c(s, lambda_6_M) * lambda_6_M), T0, 0.5))[0] + (integrate.quad((lambda s: ZC_curve(s) * (integrand_lambda_c(s, lambdas)) * lambdas), 0.5, Maturity))[0])
     return term_num / term_deno
 
-lambda_6_M = get_Default_Intensity(spread_CDS["IBE6MEUAM=R"][0], spread_CDS["Matu_By_Year"][0], cs)
+lambda_6_M = get_Default_Intensity(spread_CDS["VOWG6MEUAM=R"][0], spread_CDS["Matu_By_Year"][0], cs)
 def NYear_SpreadCDS(lambdas, Maturity, ZC_curve, lambda_data, 𝜏=0.25, RR=0.4, T0=0):
     print("lambdas", lambdas)
-    ancien_lambda = list(lambda_data.values())
-    print('dico', ancien_lambda)
-    # pour 1 year je dois splité mes intégrale ens deux à chaque fois pour tenir conte de la constance entre 0 et 6 et entre 6 et 12 mois résiduelle
-    #lambda_6_M = get_Default_Intensity(spreads_data["VOWG6MEUAM=R"][0], spreads_data["Matu_By_Year"][0], ZC_curve)
     integrand_deno = lambda s: ZC_curve(s) * ((s - T0) / (𝜏)) * integrand_lambda_c(s, lambdas) * lambdas
     term_deno = 0
     term_num = (integrate.quad((lambda s: ZC_curve(s) * integrand_lambda_c(s, lambda_6_M) * lambda_6_M), T0, 0.5))[0]
     mat = [0.5,1, 2, 3,4]
-    for i in range(int(Maturity / 𝜏) + 1):
-        current_lambda = lambdas
+    i=0
+    while i <=(Maturity / 𝜏):
         if (i + 1) * 𝜏 <= 0.5:
             current_lambda = lambda_6_M
             integrand_deno_6M = lambda s: ZC_curve(s) * ((s - (i*𝜏)) / (𝜏)) * integrand_lambda_c(s, current_lambda) * current_lambda
             first_term = ZC_curve((i + 1) * 𝜏) * integrand_lambda_c((i + 1) * 𝜏, current_lambda)
             second_term, _ = integrate.quad(integrand_deno_6M, i * 𝜏, (i + 1) * 𝜏)
             term_deno += (first_term + second_term) * 𝜏
+            i+=1
         else:
-            first_term = ZC_curve((i + 1) * 𝜏) * (integrand_lambda_c((i + 1) * 𝜏 - i * 𝜏, lambdas))
-            second_term, _ = integrate.quad(integrand_deno, i * 𝜏, (i + 1) * 𝜏)
-            term_deno += (first_term + second_term) * 𝜏
-            if (i + 1) * 𝜏 > mat[1]:
-                term_num =+ integrate.quad((lambda s: ZC_curve(s) * (integrand_lambda_c(s, lambdas)) * lambdas), mat[0], mat[1])[0]
+            try:
+                while (i + 1) * 𝜏 <= mat[1]:
+                    print("l",lambda_data)
+                    current_lambda = lambda_data[str(float(mat[1]))]
+                    print("c",current_lambda)
+                    first_term = ZC_curve((i + 1) * 𝜏) * (integrand_lambda_c((i + 1) * 𝜏 - i * 𝜏, current_lambda))
+                    second_term, _ = integrate.quad(integrand_deno, i * 𝜏, (i + 1) * 𝜏)
+                    term_deno += (first_term + second_term) * 𝜏
+                    i+=1
+                term_num =+ integrate.quad((lambda s: ZC_curve(s) * (integrand_lambda_c(s, current_lambda)) * current_lambda), mat[0], mat[1])[0]
                 mat = mat[1:]
+            except:
+                current_lambda = lambdas
+                first_term = ZC_curve((i + 1) * 𝜏) * (integrand_lambda_c((i + 1) * 𝜏 - i * 𝜏, current_lambda))
+                second_term, _ = integrate.quad(integrand_deno, i * 𝜏, (i + 1) * 𝜏)
+                term_deno += (first_term + second_term) * 𝜏
+                i+=1
 
+        print('incr', i)
+    term_num =+ integrate.quad((lambda s: ZC_curve(s) * (integrand_lambda_c(s, current_lambda)) * current_lambda), mat[0], mat[1])[0]
     return ((1 - RR) * term_num )/ term_deno
 
 def Generalisation_Defaut(spreads_data, maturities, ZC_curve):
@@ -260,7 +270,7 @@ def SpreadCDSRecursive(lambdas, Maturity, ZC_curve, spread_CDS, 𝜏i=0.25, RR=0
     print("dico",dico_Lambda)
 
 #    maturite = list(spread_CDS["Matu_By_Year"])[:(index_matu + 1)]
-#   maturite.insert(0, 0)
+#    maturite.insert(0, 0)
 #    term_num = (1 - RR) * sum(calculate_term_num(maturite[i + 1], 0.04, maturite[i]) for i in range(len(maturite) - 1))
 #    term_deno = spread_cds_recursive(0)
     return (dico_Lambda)
