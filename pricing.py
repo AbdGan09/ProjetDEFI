@@ -189,6 +189,7 @@ def NYear_SpreadCDS(lambdas, Maturity, ZC_curve, lambda_data, 𝜏=0.25, RR=0.4,
     term_num = (integrate.quad((lambda s: ZC_curve(s) * integrand_lambda_c(s, lambda_6_M) * lambda_6_M), T0, 0.5))[0]
     mat = [0.5, 1, 2, 3,4, 5,7,10]
     i=0
+    current_integrant = integrand_lambda_c(0.5, lambda_6_M)
     while i <=(Maturity / 𝜏):
         if (i + 1) * 𝜏 <= 0.5:
             current_lambda = lambda_6_M
@@ -198,16 +199,16 @@ def NYear_SpreadCDS(lambdas, Maturity, ZC_curve, lambda_data, 𝜏=0.25, RR=0.4,
             term_deno += (first_term + second_term) * 𝜏
             i+=1
         else:
+            current_integrant *= integrand_lambda_c((𝜏), current_lambda)
+            integrand_deno = lambda s: ZC_curve(s) * ((s - i * 𝜏) / (𝜏)) * integrand_lambda_c(s, current_lambda) * current_integrant * current_lambda
             try:
                 while (i + 1) * 𝜏 <= mat[1]:
                     print("l",lambda_data)
                     current_lambda = lambda_data[str(float(mat[1]))]
                     print("c",current_lambda)
-                    integrand_deno = lambda s: ZC_curve(s) * ((s - i*𝜏) / (𝜏)) * integrand_lambda_c(s, current_lambda) * current_lambda
                     first_term *= ZC_curve((i + 1) * 𝜏) * (integrand_lambda_c((i + 1) * 𝜏 - i * 𝜏, current_lambda))
                     second_term *= integrate.quad(integrand_deno, i * 𝜏, (i + 1) * 𝜏)[0]
                     i+=1
-
                 term_deno += (first_term + second_term) * 𝜏
                 term_num = sum([integrate.quad((lambda s: ZC_curve(s) * (integrand_lambda_c(s, lambda_data[str(float(mat[i]))])) * lambda_data[str(float(mat[i]))]), mat[i],mat[i + 1])[0] for i in range(len(mat))])
                 mat = mat[1:]
@@ -217,7 +218,6 @@ def NYear_SpreadCDS(lambdas, Maturity, ZC_curve, lambda_data, 𝜏=0.25, RR=0.4,
                 first_term  *= ZC_curve((i + 1) * 𝜏) * (integrand_lambda_c((i + 1) * 𝜏 - i * 𝜏, current_lambda))
                 second_term *= integrate.quad(integrand_deno, i * 𝜏, (i + 1) * 𝜏)[0]
                 i+=1
-
             term_deno += (first_term + second_term) * 𝜏
             print(term_num)
             term_num += (integrate.quad((lambda s: ZC_curve(s) * integrand_lambda_c(s, lambdas) * lambdas), mat[0],mat[1]))[0]
