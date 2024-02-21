@@ -110,7 +110,7 @@ def calcul_EPE(t,S,n_traject=10,n_obser=3000, N=100, T=30, R=0.03,𝜏= 0.5):
         D = zeroCoupon(t, S, 0.03)
     valeur = np.maximum(Vrec.loc[:,t:S],0)
     EPE = valeur.mean(axis=1)*LGD*D
-    return(EPE.mean())
+    return(EPE)
 
 #CDS
 def pricingCDS():
