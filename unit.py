@@ -64,7 +64,7 @@ class Main:
         pricingCDS()
     @staticmethod
     def testSixMonth():
-        print("SixMonth Spread is:", calcul_SpreadCDS(0.02, 0.5, cs, spread_CDS, 𝜏i=0.25, RR=0.4, T0=0))
+        print("SixMonth Spread is:", calcul_SpreadCDS(0.0025, 0.5, cs, spread_CDS, 𝜏i=0.25, RR=0.4, T0=0))
         print("Defaut Intensity for 6 Month is",get_Default_Intensity(12.32, 0.5, cs, spread_CDS, lambda_c_constant=0.0001))
 
     @staticmethod
@@ -83,6 +83,10 @@ class Main:
         plt.step(X,Y, where='post', linestyle='-')
         plt.show()
 
+    def testEPE():
+        E = calcul_EPE(0, 4, n_traject=2, n_obser=5000, N=100, T=5, R=0.03, 𝜏=0.5)
+        print (E)
+
 #Main.courbe_fwdinst(10)
 #Main.test_Hull_White()
 #Main.testTrajectoire()
@@ -93,4 +97,6 @@ class Main:
 
 #Main.testSixMonth()
 #Main.testOneYearCDS()
-Main.testNyearCDS()
+#Main.testNyearCDS()
+
+Main.testEPE()
