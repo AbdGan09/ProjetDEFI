@@ -104,7 +104,10 @@ def calcul_EPE(t,S,n_traject=10,n_obser=3000, N=100, T=30, R=0.03,𝜏= 0.5):
     Vrec = Vrec.fillna(0)
     RR = 0.03
     LGD = 1-RR
-    D = zeroCoupon(t+0.0001, S, 0.03)
+    if t==0:
+        D = zeroCoupon(t+0.0001, S, 0.03)
+    else:
+        D = zeroCoupon(t, S, 0.03)
     valeur = np.maximum(Vrec.loc[:,t:S],0)
     EPE = valeur.sum(axis=1)*LGD*D
     print(EPE)

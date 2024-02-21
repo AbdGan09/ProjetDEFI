@@ -84,7 +84,7 @@ class Main:
         plt.show()
 
     def testEPE():
-        E = calcul_EPE(0, 4, n_traject=2, n_obser=5000, N=100, T=5, R=0.03, 𝜏=0.5)
+        E = calcul_EPE(1, 2, n_traject=4, n_obser=3000, N=100, T=30, R=0.03, 𝜏=0.5)
         print (E)
 
 #Main.courbe_fwdinst(10)
