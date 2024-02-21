@@ -110,9 +110,7 @@ def calcul_EPE(t,S,n_traject=10,n_obser=3000, N=100, T=30, R=0.03,𝜏= 0.5):
         D = zeroCoupon(t, S, 0.03)
     valeur = np.maximum(Vrec.loc[:,t:S],0)
     EPE = valeur.sum(axis=1)*LGD*D
-    print(EPE)
     return(EPE.mean())
-
 
 #CDS
 def pricingCDS():
@@ -159,7 +157,7 @@ def get_Default_Intensity(spread, Maturity, ZC_curve, spreads_data=None, lambda_
     #elif Maturity == 1:
         #lambda_c_numeric = scipy.optimize.minimize(lambda lambda_c: (One_Year_SpreadCDS(lambda_c, Maturity, ZC_curve, spreads_data) - (spread / 10000)) ** 2, lambda_c_constant - 0.00001, method="Powell").x[0]
     #else:
-    lambda_c_numeric = scipy.optimize.minimize(lambda lambda_c: (NYear_SpreadCDS(lambda_c, Maturity, ZC_curve, spreads_data) - (spread / 10000)) ** 2, lambda_c_constant - 0.00001,bounds=[(0.0020,0.03)], method="Powell").x[0]
+    lambda_c_numeric = scipy.optimize.minimize(lambda lambda_c: (NYear_SpreadCDS(lambda_c, Maturity, ZC_curve, spreads_data) - (spread / 10000)) ** 2, lambda_c_constant - 0.00001,bounds=[(0.0015,0.03)], method="Powell").x[0]
     print("lambda_c_numeric", lambda_c_numeric, Maturity)
     return lambda_c_numeric
 

@@ -84,7 +84,7 @@ class Main:
         plt.show()
 
     def testEPE():
-        E = calcul_EPE(1, 2, n_traject=4, n_obser=3000, N=100, T=30, R=0.03, 𝜏=0.5)
+        E = calcul_EPE(10, 15, n_traject=4, n_obser=3000, N=100, T=30, R=0.03, 𝜏=0.5)
         print (E)
 
 #Main.courbe_fwdinst(10)
@@ -97,6 +97,6 @@ class Main:
 
 #Main.testSixMonth()
 #Main.testOneYearCDS()
-#Main.testNyearCDS()
+Main.testNyearCDS()
 
-Main.testEPE()
+#Main.testEPE()
