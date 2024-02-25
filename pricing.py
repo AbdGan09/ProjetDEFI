@@ -118,11 +118,11 @@ def calcul_CVA(t,T,dico_lambdas):
         CVA = 0
         for i in range(1,len(mat)):
             mat_prime = mat[1:i+1]
-            e = 0
+            e = 1
             for j in range(len(mat_prime)):
                 e*=integrand_lambda_c(float(mat_prime[j]), dico_lambdas[mat_prime[j]])
             EPE = calcul_EPE(t,float(mat[i]),n_traject=4,n_obser=1000, N=100, T=10, R=0.03,𝜏= 0.5).mean()
-            CVA+=(float(mat[i])-float(mat[i-1]))*dico_lambdas[mat[i]]*EPE
+            CVA+=(float(mat[i])-float(mat[i-1]))*dico_lambdas[mat[i]]*e*EPE
         return(CVA)
 
     else:
