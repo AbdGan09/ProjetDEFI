@@ -161,7 +161,7 @@ def get_Default_Intensity(spread, Maturity, ZC_curve, spreads_data=None, lambda_
     #elif Maturity == 1:
         #lambda_c_numeric = scipy.optimize.minimize(lambda lambda_c: (One_Year_SpreadCDS(lambda_c, Maturity, ZC_curve, spreads_data) - (spread / 10000)) ** 2, lambda_c_constant - 0.00001, method="Powell").x[0]
     #else:
-    lambda_c_numeric = scipy.optimize.minimize(lambda lambda_c: (NYear_SpreadCDS(lambda_c, Maturity, ZC_curve, spreads_data) - (spread / 10000)) ** 2, 0.0015,bounds=[(0.0015,0.03)], method="Powell").x[0]
+    lambda_c_numeric = scipy.optimize.minimize(lambda lambda_c: (NYear_SpreadCDS(lambda_c, Maturity, ZC_curve, spreads_data) - (spread / 10000)) ** 2, 0.0008,bounds=[(0.0006,0.03)], method="Powell").x[0]
     print("lambda_c_numeric", lambda_c_numeric, Maturity)
     return lambda_c_numeric
 
@@ -198,11 +198,9 @@ def One_Year_SpreadCDS(lambdas, Maturity, ZC_curve, spreads_data, 𝜏i=0.25, RR
     term_num = (1 - RR) * ((integrate.quad((lambda s: ZC_curve(s) * integrand_lambda_c(s, lambda_6_M) * lambda_6_M), T0, 0.5))[0] + (integrate.quad((lambda s: ZC_curve(s) * (integrand_lambda_c(s, lambdas)) * lambdas), 0.5, Maturity))[0])
     return term_num / term_deno
 
-#lambda_6_M = get_Default_Intensity(spread_CDS["VIE6MEUAM=R"][0], spread_CDS["Matu_By_Year"][0], cs)
-
 def NYear_SpreadCDS(lambdas, Maturity, ZC_curve, lambda_data, 𝜏=0.25, RR=0.4, T0=0):
     print("lambdas", lambdas)
-    lambda_6_M = scipy.optimize.minimize(lambda lambda_c: (calcul_SpreadCDS(lambda_c, spread_CDS["Matu_By_Year"][0], ZC_curve, spread_CDS) - (spread_CDS["VOWG6MEUAM=R"][0] / 10000)) ** 2, 0.0015, bounds=[(0.0020,0.03)],method="Powell").x[0]
+    lambda_6_M = scipy.optimize.minimize(lambda lambda_c: (calcul_SpreadCDS(lambda_c, spread_CDS["Matu_By_Year"][0], ZC_curve, spread_CDS) - (spread_CDS["VOWG6MEUAM=R"][0] / 10000)) ** 2, 0.0008, bounds=[(0.0006,0.03)],method="Powell").x[0]
     term_deno = 0
     term_num = (integrate.quad((lambda s: ZC_curve(s) * integrand_lambda_c(s, lambda_6_M) * lambda_6_M), T0, 0.5))[0]
     mat = [0.5, 1, 2, 3,4, 5,7,10]
@@ -243,48 +241,7 @@ def NYear_SpreadCDS(lambdas, Maturity, ZC_curve, lambda_data, 𝜏=0.25, RR=0.4,
         print('incr', i)
     return ((1 - RR) * term_num )/ term_deno
 
-def Generalisation_Defaut(spreads_data, maturities, ZC_curve):
-    lambdas_result = {}
-    for i in range(len(maturities)):
-        lambdas_result[str(spreads_data["Matu_By_Year"][i])] = get_Default_Intensity(spread_CDS["VOWG6MEUAM=R"][i], spread_CDS["Matu_By_Year"][i], ZC_curve, spread_CDS)
-    return lambdas_result
-
-
 def SpreadCDSRecursive(lambdas, Maturity, ZC_curve, spread_CDS, 𝜏i=0.25, RR=0.4, T0=0):
-    def integrand_lambda(u, lambdas, TO=0):
-        current_lambda = Map_Lambda(u, lambdas)
-        return np.exp(-current_lambda * (u - TO))
-
-    def calculate_term_num(s, lambdas, init):
-        current_lambda = Map_Lambda(s, lambdas)
-        return integrate.quad(lambda u: ZC_curve(u) * integrand_lambda(u, current_lambda) * current_lambda, init, s)[0]
-
-    def Map_Lambda(s, lambdas):
-        for value in list(spread_CDS["Matu_By_Year"])[:(index_matu)]:
-            if s <= value:
-                current_lambda = dico_Lambda[str(value)]
-                break
-            else:
-                current_lambda = lambdas
-        return current_lambda
-
-    def calculate_term_deno(i, current_lambda):
-        for value in spread_CDS["Matu_By_Year"][:index_matu]:
-            if (i + 1) * 𝜏i <= value:
-                current_lambda = dico_Lambda[str(value)]
-                break
-            else:
-                current_lambda = lambdas
-        first_term = ZC_curve((i + 1) * 𝜏i) * integrand_lambda_c((i + 1) * 𝜏i, current_lambda)
-        second_term, _ = integrate.quad(lambda s: calculate_term_num(s, current_lambda, 0), i * 𝜏i, (i + 1) * 𝜏i)
-        return (first_term + second_term) * 𝜏i
-
-    def spread_cds_recursive(i):
-        if i >= Maturity / 𝜏i:
-            return 0
-        else:
-            return calculate_term_deno(i, dico_Lambda["0.5"]) + spread_cds_recursive(i + 1)
-
     dico_Lambda = {}
     index_matu = list(spread_CDS["Matu_By_Year"]).index(Maturity)
     for i in range(index_matu+1):
@@ -292,8 +249,4 @@ def SpreadCDSRecursive(lambdas, Maturity, ZC_curve, spread_CDS, 𝜏i=0.25, RR=0
 
     print("dico",dico_Lambda)
 
-#    maturite = list(spread_CDS["Matu_By_Year"])[:(index_matu + 1)]
-#    maturite.insert(0, 0)
-#    term_num = (1 - RR) * sum(calculate_term_num(maturite[i + 1], 0.04, maturite[i]) for i in range(len(maturite) - 1))
-#    term_deno = spread_cds_recursive(0)
     return (dico_Lambda)
