@@ -246,5 +246,5 @@ def SpreadCDSRecursive(lambdas, Maturity, ZC_curve, spread_CDS, 𝜏i=0.25, RR=0
     index_matu = list(spread_CDS["Matu_By_Year"]).index(Maturity)
     for i in range(index_matu+1):
         dico_Lambda[str(spread_CDS["Matu_By_Year"][i])] = get_Default_Intensity(spread_CDS["VOWG6MEUAM=R"][i], spread_CDS["Matu_By_Year"][i], ZC_curve, dico_Lambda)
-
+    print('dico_lambda',dico_Lambda)
     return (dico_Lambda)
