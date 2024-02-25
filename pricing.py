@@ -73,6 +73,31 @@ def simulationP(n_traject, n_obser, T,R, t, 𝜏, i_traj=0,r=None, isPsimulation
     L = pd.DataFrame(L)
 
     return L, P
+def P_and_L_with_Zc_Curve(cs, T, 𝜏, R):
+    print((T / 𝜏) + 1)
+    dates_paiement = np.round(np.arange(0, T + 1, 𝜏), 4)
+    print("dates_paiement ", len(dates_paiement))
+    print(cs)
+    P = []
+    L = []
+    for j in dates_paiement[1:len(dates_paiement) - 1]:
+        P.append(cs(j).item())
+        if j!=1:
+            L.append((1 / 𝜏) * ((cs(j-1).item() / cs(j).item()) - 1))
+    R_moins_L = R-np.array(L)
+    print("R_moins_L ", R_moins_L)
+    print("len P", len(P))
+    print("L", len(L))
+    return P, L, list(R_moins_L)
+
+def Vrec_with_ZC(cs, T, 𝜏, R, N=1):
+    P, L, R_moins_L = P_and_L_with_Zc_Curve(cs, T, 𝜏, R)
+    prix_actual = np.array(P[1:]).T
+    L_actual = np.array(R_moins_L)
+    v_t = np.dot(L_actual, prix_actual)*N
+    v_t = v_t
+    return v_t
+
 
 #Simulation du Vrec
 #N: notional

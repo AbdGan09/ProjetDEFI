@@ -92,6 +92,17 @@ class Main:
         CVA = calcul_CVA(0, 10, dict_lambdas)
         print ('La CVA est: ',CVA)
 
+
+    @staticmethod
+    def Test_P_and_L(data =cs, T=30, 𝜏=0.5, R=0.03):
+        P = P_and_L_with_Zc_Curve(data, T, 𝜏, R)
+        print(P)
+    @staticmethod
+    def Test_Vrec_with_P_L(data=cs, T=30, 𝜏=0.5, R=0.03, N=1):
+        V_rec = Vrec_with_ZC(data, T, 𝜏, R, N)
+        print(V_rec)
+
+
 #Main.courbe_fwdinst(10)
 #Main.test_Hull_White()
 #Main.testTrajectoire()
@@ -106,3 +117,6 @@ class Main:
 
 #Main.testEPE()
 Main.testCVA()
+
+#Main.Test_P_and_L()
+#Main.Test_Vrec_with_P_L()
