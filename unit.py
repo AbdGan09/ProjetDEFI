@@ -76,7 +76,7 @@ class Main:
     @staticmethod
     def testNyearCDS(N=10):
         res = SpreadCDSRecursive(0.04, N, cs, spread_CDS, 𝜏i=0.25, RR=0.4, T0=0)
-        Y=list(res.values())
+        Y = list(res.values())
         Y.append(Y[-1])
         X = list(res.keys())
         X.insert(0,0)
