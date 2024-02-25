@@ -97,6 +97,6 @@ class Main:
 
 #Main.testSixMonth()
 #Main.testOneYearCDS()
-#Main.testNyearCDS()
+Main.testNyearCDS()
 
-Main.testEPE()
+#Main.testEPE()
