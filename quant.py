@@ -82,8 +82,6 @@ def get_Spread_CDS(Data, Ticker):
 def integrand_lambda_c(s, lambdas, TO=0):
     return np.exp(-lambdas * (s-TO))
 
-
-
 # Modele de Hull White
 # dW: liste de simulation de la loi normal centré réduite.
 # IsForSimulation à True si vous voulez utilisez cette fonction dans la partie pricing

@@ -87,6 +87,11 @@ class Main:
         E = calcul_EPE(10, 15, n_traject=4, n_obser=3000, N=100, T=30, R=0.03, 𝜏=0.5)
         print (E)
 
+    def testCVA(N=10):
+        dict_lambdas = SpreadCDSRecursive(0.04, N, cs, spread_CDS, 𝜏i=0.25, RR=0.4, T0=0)
+        CVA = calcul_CVA(0, 10, dict_lambdas)
+        print ('La CVA est: ',CVA)
+
 #Main.courbe_fwdinst(10)
 #Main.test_Hull_White()
 #Main.testTrajectoire()
@@ -97,6 +102,7 @@ class Main:
 
 #Main.testSixMonth()
 #Main.testOneYearCDS()
-Main.testNyearCDS()
+#Main.testNyearCDS()
 
 #Main.testEPE()
+Main.testCVA()

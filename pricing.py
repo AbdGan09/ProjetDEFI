@@ -111,10 +111,22 @@ def calcul_EPE(t,S,n_traject=10,n_obser=3000, N=100, T=30, R=0.03,𝜏= 0.5):
     valeur = np.maximum(Vrec.loc[:,t:S],0)
     EPE = valeur.mean(axis=1)*LGD*D
     return(EPE)
-def calcul_CVA(t,T):
-    integrand_lambda_c(s, lambdas, TO=0)
-    mat = [0.5]
+def calcul_CVA(t,T,dico_lambdas):
+    mat = list(dico_lambdas.keys())
+    mat.insert(0,'0')
+    if float(T)==float(mat[-1]):
+        CVA = 0
+        for i in range(1,len(mat)):
+            mat_prime = mat[1:i+1]
+            e = 0
+            for j in range(len(mat_prime)):
+                e*=integrand_lambda_c(float(mat_prime[j]), dico_lambdas[mat_prime[j]])
+            EPE = calcul_EPE(t,float(mat[i]),n_traject=4,n_obser=1000, N=100, T=10, R=0.03,𝜏= 0.5).mean()
+            CVA+=(float(mat[i])-float(mat[i-1]))*dico_lambdas[mat[i]]*EPE
+        return(CVA)
 
+    else:
+        return('erreur')
 
 #CDS
 def pricingCDS():
@@ -155,14 +167,7 @@ def pricingCDS():
 
 #CDS 6months and CDS 1year
 def get_Default_Intensity(spread, Maturity, ZC_curve, spreads_data=None, lambda_c_constant=0.0001):
-    # For the case of 6 months
-    #if Maturity == 0.5:
-    #    lambda_c_numeric = scipy.optimize.minimize(lambda lambda_c: (calcul_SpreadCDS(lambda_c, Maturity, ZC_curve, spreads_data) - (spread / 10000)) ** 2, lambda_c_constant - 0.00001, method="Powell").x[0]
-    #elif Maturity == 1:
-        #lambda_c_numeric = scipy.optimize.minimize(lambda lambda_c: (One_Year_SpreadCDS(lambda_c, Maturity, ZC_curve, spreads_data) - (spread / 10000)) ** 2, lambda_c_constant - 0.00001, method="Powell").x[0]
-    #else:
     lambda_c_numeric = scipy.optimize.minimize(lambda lambda_c: (NYear_SpreadCDS(lambda_c, Maturity, ZC_curve, spreads_data) - (spread / 10000)) ** 2, 0.0008,bounds=[(0.0006,0.03)], method="Powell").x[0]
-    print("lambda_c_numeric", lambda_c_numeric, Maturity)
     return lambda_c_numeric
 
 
@@ -199,7 +204,6 @@ def One_Year_SpreadCDS(lambdas, Maturity, ZC_curve, spreads_data, 𝜏i=0.25, RR
     return term_num / term_deno
 
 def NYear_SpreadCDS(lambdas, Maturity, ZC_curve, lambda_data, 𝜏=0.25, RR=0.4, T0=0):
-    print("lambdas", lambdas)
     lambda_6_M = scipy.optimize.minimize(lambda lambda_c: (calcul_SpreadCDS(lambda_c, spread_CDS["Matu_By_Year"][0], ZC_curve, spread_CDS) - (spread_CDS["VOWG6MEUAM=R"][0] / 10000)) ** 2, 0.0008, bounds=[(0.0006,0.03)],method="Powell").x[0]
     term_deno = 0
     term_num = (integrate.quad((lambda s: ZC_curve(s) * integrand_lambda_c(s, lambda_6_M) * lambda_6_M), T0, 0.5))[0]
@@ -219,9 +223,7 @@ def NYear_SpreadCDS(lambdas, Maturity, ZC_curve, lambda_data, 𝜏=0.25, RR=0.4,
             integrand_deno = lambda s: ZC_curve(s) * ((s - i * 𝜏) / (𝜏)) * integrand_lambda_c(s, current_lambda) * current_integrant * current_lambda
             try:
                 while (i + 1) * 𝜏 <= mat[1]:
-                    print("l",lambda_data)
                     current_lambda = lambda_data[str(float(mat[1]))]
-                    print("c",current_lambda)
                     first_term *= ZC_curve((i + 1) * 𝜏) * (integrand_lambda_c((i + 1) * 𝜏 - i * 𝜏, current_lambda))
                     second_term *= integrate.quad(integrand_deno, i * 𝜏, (i + 1) * 𝜏)[0]
                     i+=1
@@ -235,10 +237,8 @@ def NYear_SpreadCDS(lambdas, Maturity, ZC_curve, lambda_data, 𝜏=0.25, RR=0.4,
                 second_term *= integrate.quad(integrand_deno, i * 𝜏, (i + 1) * 𝜏)[0]
                 i+=1
             term_deno += (first_term + second_term) * 𝜏
-            print(term_num)
             term_num += (integrate.quad((lambda s: ZC_curve(s) * integrand_lambda_c(s, lambdas) * lambdas), mat[0],mat[1]))[0]
 
-        print('incr', i)
     return ((1 - RR) * term_num )/ term_deno
 
 def SpreadCDSRecursive(lambdas, Maturity, ZC_curve, spread_CDS, 𝜏i=0.25, RR=0.4, T0=0):
@@ -246,7 +246,5 @@ def SpreadCDSRecursive(lambdas, Maturity, ZC_curve, spread_CDS, 𝜏i=0.25, RR=0
     index_matu = list(spread_CDS["Matu_By_Year"]).index(Maturity)
     for i in range(index_matu+1):
         dico_Lambda[str(spread_CDS["Matu_By_Year"][i])] = get_Default_Intensity(spread_CDS["VOWG6MEUAM=R"][i], spread_CDS["Matu_By_Year"][i], ZC_curve, dico_Lambda)
-
-    print("dico",dico_Lambda)
 
     return (dico_Lambda)
