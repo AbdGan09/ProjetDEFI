@@ -74,7 +74,7 @@ class Main:
               get_Default_Intensity(46.5, 1, cs, spread_CDS, lambda_c_constant=0.0001))
 
     @staticmethod
-    def testNyearCDS(N=10):
+    def testNyearCDS(N=30):
         res = SpreadCDSRecursive(0.04, N, cs, spread_CDS, 𝜏i=0.25, RR=0.4, T0=0)
         Y = list(res.values())
         Y.append(Y[-1])
@@ -87,9 +87,9 @@ class Main:
         E = calcul_EPE(10, 15, n_traject=4, n_obser=3000, N=100, T=30, R=0.03, 𝜏=0.5)
         print (E)
 
-    def testCVA(N=10):
+    def testCVA(N=30):
         dict_lambdas = SpreadCDSRecursive(0.04, N, cs, spread_CDS, 𝜏i=0.25, RR=0.4, T0=0)
-        CVA = calcul_CVA(0, 10, dict_lambdas)
+        CVA = calcul_CVA(0, 30, dict_lambdas)
         print ('La CVA est: ',CVA)
 
 #Main.courbe_fwdinst(10)

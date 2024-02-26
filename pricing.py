@@ -121,7 +121,7 @@ def calcul_CVA(t,T,dico_lambdas):
             e = 1
             for j in range(len(mat_prime)):
                 e*=integrand_lambda_c(float(mat_prime[j]), dico_lambdas[mat_prime[j]])
-            EPE = calcul_EPE(t,float(mat[i]),n_traject=4,n_obser=1000, N=100, T=10, R=0.03,𝜏= 0.5).mean()
+            EPE = calcul_EPE(t,float(mat[i]),n_traject=4,n_obser=3000, N=100, T=30, R=0.03,𝜏= 0.5).mean()
             CVA+=(float(mat[i])-float(mat[i-1]))*dico_lambdas[mat[i]]*e*EPE
         return(CVA)
 
@@ -207,7 +207,7 @@ def NYear_SpreadCDS(lambdas, Maturity, ZC_curve, lambda_data, 𝜏=0.25, RR=0.4,
     lambda_6_M = scipy.optimize.minimize(lambda lambda_c: (calcul_SpreadCDS(lambda_c, spread_CDS["Matu_By_Year"][0], ZC_curve, spread_CDS) - (spread_CDS["VOWG6MEUAM=R"][0] / 10000)) ** 2, 0.0008, bounds=[(0.0006,0.03)],method="Powell").x[0]
     term_deno = 0
     term_num = (integrate.quad((lambda s: ZC_curve(s) * integrand_lambda_c(s, lambda_6_M) * lambda_6_M), T0, 0.5))[0]
-    mat = [0.5, 1, 2, 3,4, 5,7,10]
+    mat = [0.5, 1, 2, 3,4, 5,7,10,15,20,30]
     i=0
     current_integrant = integrand_lambda_c(0.5, lambda_6_M)
     while i <=(Maturity / 𝜏):
