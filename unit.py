@@ -82,6 +82,16 @@ class Main:
         X.insert(0,0)
         plt.step(X,Y, where='post', linestyle='-')
         plt.show()
+    def testNyearCDS_flat(N=30):
+        res = SpreadCDSRecursive(0.04, N, cs, spread_CDS, 𝜏i=0.25, RR=0.4, T0=0)
+        for i in (list(dict_lambdas.keys())[8:]):
+            dict_lambdas[i]=dict_lambdas['10.0']
+        Y = list(res.values())
+        Y.append(Y[-1])
+        X = list(res.keys())
+        X.insert(0,0)
+        plt.step(X,Y, where='post', linestyle='-')
+        plt.show()
 
     def testEPE():
         E = calcul_EPE(10, 15, n_traject=4, n_obser=3000, N=100, T=30, R=0.03, 𝜏=0.5)
@@ -91,7 +101,7 @@ class Main:
         dict_lambdas = SpreadCDSRecursive(0.04, N, cs, spread_CDS, 𝜏i=0.25, RR=0.4, T0=0)
         CVA = calcul_CVA(0, 30, dict_lambdas)
         print ('La CVA est: ',CVA)
-    def testCVA10(N=30):
+    def testCVA_flat(N=30):
         dict_lambdas = SpreadCDSRecursive(0.04, N, cs, spread_CDS, 𝜏i=0.25, RR=0.4, T0=0)
         for i in (list(dict_lambdas.keys())[8:]):
             dict_lambdas[i]=dict_lambdas['10.0']
@@ -109,6 +119,8 @@ class Main:
 #Main.testSixMonth()
 #Main.testOneYearCDS()
 #Main.testNyearCDS()
+#Main.testNyearCDS_flat()
 
 #Main.testEPE()
 #Main.testCVA()
+Main.testCVA_flat()
