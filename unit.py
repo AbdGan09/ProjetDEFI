@@ -91,6 +91,12 @@ class Main:
         dict_lambdas = SpreadCDSRecursive(0.04, N, cs, spread_CDS, 𝜏i=0.25, RR=0.4, T0=0)
         CVA = calcul_CVA(0, 30, dict_lambdas)
         print ('La CVA est: ',CVA)
+    def testCVA10(N=30):
+        dict_lambdas = SpreadCDSRecursive(0.04, N, cs, spread_CDS, 𝜏i=0.25, RR=0.4, T0=0)
+        for i in (list(dict_lambdas.keys())[8:]):
+            dict_lambdas[i]=dict_lambdas['10.0']
+        CVA = calcul_CVA(0, 30, dict_lambdas)
+        print ('La CVA est: ',CVA)
 
 #Main.courbe_fwdinst(10)
 #Main.test_Hull_White()
@@ -105,4 +111,4 @@ class Main:
 #Main.testNyearCDS()
 
 #Main.testEPE()
-Main.testCVA()
+#Main.testCVA()
