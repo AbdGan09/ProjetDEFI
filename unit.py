@@ -84,8 +84,8 @@ class Main:
         plt.show()
     def testNyearCDS_flat(N=30):
         res = SpreadCDSRecursive(0.04, N, cs, spread_CDS, 𝜏i=0.25, RR=0.4, T0=0)
-        for i in (list(dict_lambdas.keys())[8:]):
-            dict_lambdas[i]=dict_lambdas['10.0']
+        for i in (list(res.keys())[8:]):
+            res[i]=res['10.0']
         Y = list(res.values())
         Y.append(Y[-1])
         X = list(res.keys())
@@ -119,8 +119,8 @@ class Main:
 #Main.testSixMonth()
 #Main.testOneYearCDS()
 #Main.testNyearCDS()
-#Main.testNyearCDS_flat()
+Main.testNyearCDS_flat()
 
 #Main.testEPE()
 #Main.testCVA()
-Main.testCVA_flat()
+#Main.testCVA_flat()

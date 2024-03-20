@@ -5,9 +5,11 @@ from scipy import integrate
 from scipy.optimize import newton
 from scipy.optimize import fsolve
 import scipy.optimize._minimize
+from sklearn.neighbors import NearestNeighbors
 #simulation de trajectoire
 data = importData(r'boostrapping_etudiants2.xlsx', "Donnee")
 spread_CDS = importData(r'spreads_CDS.xlsx', 'SpreadsCDS')
+Data_modele_brut = importData(r'Data_modele.xlsx')
 cs = ZeroCouponCurve(data)
 def generateurTrajectoire(n_traject, n_obser,T, 𝜏= 0.5):
     dt = T / n_obser
@@ -248,3 +250,22 @@ def SpreadCDSRecursive(lambdas, Maturity, ZC_curve, spread_CDS, 𝜏i=0.25, RR=0
         dico_Lambda[str(spread_CDS["Matu_By_Year"][i])] = get_Default_Intensity(spread_CDS["VOWG6MEUAM=R"][i], spread_CDS["Matu_By_Year"][i], ZC_curve, dico_Lambda)
     print('dico_lambda',dico_Lambda)
     return (dico_Lambda)
+
+def Modèle_NN:
+    Nb_voisins = 20  # user_entry
+
+    Data_modele_train = pd.get_dummies(Data_modele_train, columns=['Ent'])
+    train_df = Data_modele_train.dropna()
+
+    nn_model = NearestNeighbors(n_neighbors=Nb_voisins, algorithm='auto', metric='euclidean')
+    nn_model.fit(train_df)
+
+    distances, indices_neighbors = nn_model.kneighbors(testing_offre)
+
+    table_finale = result_df.iloc[indices_neighbors[0], :]
+    table_finale['scoring'] = np.round((1 - np.sqrt(distances[0] / np.linalg.norm(np.array(testing_offre)))) * 100, 2)
+    table_finale_export = table_finale[
+        ['intitule', 'description', 'lieuTravail.latitude', 'lieuTravail.longitude', 'entreprise.nom', 'typeContrat',
+         'origineOffre.urlOrigine', 'scoring']]
+    table_finale_export = table_finale_export.reset_index(drop=True)
+    table_finale_export
