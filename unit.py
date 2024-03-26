@@ -119,8 +119,8 @@ class Main:
 #Main.testSixMonth()
 #Main.testOneYearCDS()
 #Main.testNyearCDS()
-Main.testNyearCDS_flat()
+#Main.testNyearCDS_flat()
 
 #Main.testEPE()
 #Main.testCVA()
-#Main.testCVA_flat()
+Main.testCVA_flat()
